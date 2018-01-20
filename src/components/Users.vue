@@ -2,7 +2,7 @@
   <div>
       <a>Users</a>
       <ul>
-     <li class="list-group-item" style="cursor: pointer;" v-for="user in users" v-on:click="seeUser(user.id)" :user="user">
+     <li class="list-group-item" style="cursor: pointer;" v-for="user in users" v-on:click="seeUser(user.id)" :key="user.id">
           {{user.first_name}} /// {{user.last_name}}
         </li>
 

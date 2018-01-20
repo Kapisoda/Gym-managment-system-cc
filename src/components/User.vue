@@ -12,7 +12,6 @@
 import EventBus from '../EventBus.js'
 
 export default {
-  props: ['user'],
   data () {
     name: 'user'
     return {

@@ -9,6 +9,7 @@ import User from './components/User.vue'
 import Groups from './components/Groups.vue'
 import Group from './components/Group.vue'
 import SingleUser from './components/SingleUser.vue'
+import Landing from './components/Landing.vue'
 
 Vue.use(Router)
 
@@ -38,9 +39,14 @@ let router = new Router({ routes : [
     components: {default: Groups}
   },
   {
-    path: '/group',
+    path: '/group/:id',
     name: 'group',
     components: {default: Group}
+  },
+  {
+    path: '/landing',
+    name: 'landing',
+    components: {default: Landing}
   },
   /*{
     path: '*',

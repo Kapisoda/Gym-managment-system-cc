@@ -57,8 +57,8 @@ export default {
       res.auth_token= data.admin.auth_token;
       res.login=true;
       session.setSession(data.admin.username, data.admin.auth_token);
-      
-      this.$router.push({ path: '/users'});
+
+      this.$router.push({ path: '/landing'});
     }
   });
 }
