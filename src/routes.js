@@ -8,6 +8,7 @@ import Users from './components/Users.vue'
 import User from './components/User.vue'
 import Groups from './components/Groups.vue'
 import Group from './components/Group.vue'
+import SingleUser from './components/SingleUser.vue'
 
 Vue.use(Router)
 
@@ -25,6 +26,11 @@ let router = new Router({ routes : [
     path: '/user',
     name: 'user',
     components: {default: User}
+  },
+  {
+    path: '/user/:id',
+    name: 'singleUser',
+    components: {default: SingleUser}
   },
   {
     path: '/groups',

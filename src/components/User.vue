@@ -1,18 +1,33 @@
 <template>
-  <div>
-    <a>User</a>
-  </div>
+  <li class="list-group-item"
+            style="cursor: pointer"
+            @click="selectUser" >
+    {{user.first_name}} {{user.last_name}} {{user.id}}
+  </li>
+
+
 </template>
 
 <script>
-import Api from '../Api.js'
+import EventBus from '../EventBus.js'
 
 export default {
+  props: ['user'],
   data () {
     name: 'user'
     return {
 
     }
+  },
+  methods:{
+    selectUser(){
+      this.$router.push({ name: 'singleUser', params: { id: this.user.id }});
+      //router.push({ name: 'user', params: { id: this.user.id }})
+    }
+  },
+  created(){
+
+
   }
 
 }

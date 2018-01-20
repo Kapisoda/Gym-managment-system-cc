@@ -10,7 +10,7 @@
       </p>
         <button v-on:click="login_user()">login</button>
       </hr>
-      
+
 
       <div v-if="error">
         <p>
@@ -24,19 +24,16 @@
 import Api from '../Api.js'
 import res from '../Resources.js'
 import session from '../Session.js'
-
 export default {
   name: 'login',
   data () {
     return {
-
       object: {
       admin : {
         username: "adminko",
         password: "asdfasdf"
       }},
       error: false
-
     }
   },
   methods: {
@@ -47,12 +44,10 @@ export default {
     return response.json();
   }, error => {
     // error callback
-
     if(error.status){
       console.log('error is: '+error.status);
       this.error = true;
   }
-
   }).then(data => {
     //obrada podataka
     if (!this.error){
@@ -61,18 +56,15 @@ export default {
       res.email=data.admin.email;
       res.auth_token= data.admin.auth_token;
       res.login=true;
-
       session.setSession(data.admin.username, data.admin.auth_token);
-
+      
       this.$router.push({ path: '/users'});
     }
   });
-
 }
   }
 }
 </script>
 
 <style>
-
 </style>
