@@ -17,6 +17,8 @@
             Pogrešno ime ili lozinka, pokušajte ponovo.
         </p>
       </div>
+      
+
   </div>
 </template>
 
@@ -37,31 +39,31 @@ export default {
     }
   },
   methods: {
-    login_user(){
-    this.$http.post('https://gym-management-system-cc.herokuapp.com/api/v1/sessions/create', this.object).then(response => {
-    // success callback
-    this.error = false;
-    return response.json();
-  }, error => {
-    // error callback
-    if(error.status){
-      console.log('error is: '+error.status);
-      this.error = true;
-  }
-  }).then(data => {
-    //obrada podataka
-    if (!this.error){
-      res.id=data.admin.id;
-      res.username=data.admin.username;
-      res.email=data.admin.email;
-      res.auth_token= data.admin.auth_token;
-      res.login=true;
-      session.setSession(data.admin.username, data.admin.auth_token);
+      login_user(){
+      this.$http.post('https://gym-management-system-cc.herokuapp.com/api/v1/sessions/create', this.object).then(response => {
+        // success callback
+        this.error = false;
+        return response.json();
+      }, error => {
+        // error callback
+        if(error.status){
+          console.log('error is: '+error.status);
+          this.error = true;
+      }
+      }).then(data => {
+        //obrada podataka
+        if (!this.error){
+          res.id=data.admin.id;
+          res.username=data.admin.username;
+          res.email=data.admin.email;
+          res.auth_token= data.admin.auth_token;
+          res.login=true;
+          session.setSession(data.admin.username, data.admin.auth_token);
 
-      this.$router.push({ path: '/landing'});
+          this.$router.push({ path: '/landing'});
+        }
+      });
     }
-  });
-}
   }
 }
 </script>
