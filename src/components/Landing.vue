@@ -1,9 +1,17 @@
 <template>
 <div>
-<appUsers></appUsers>
-<hr />
-<appGroups></appGroups>
 
+<hr />
+
+<tabs>
+        <tab name="Users tab" >
+            <appUsers></appUsers>
+        </tab>
+        <tab name="Groups tab" >
+            <appGroups></appGroups>
+        </tab>
+
+    </tabs>
 </div>
 </template>
 <script>
