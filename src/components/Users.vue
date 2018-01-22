@@ -1,9 +1,10 @@
 <template>
   <div>
       <a>Users</a>
+      <button v-on:click="showUsers='active'">Active users</button><button v-on:click="showUsers='deactive'">Deactive users</button>
       <ul>
-     <li class="list-group-item" style="cursor: pointer;" v-for="user in users" v-on:click="seeUser(user.id)" :key="user.id">
-          {{user.first_name}} /// {{user.last_name}}
+     <li class="list-group-item" style="cursor: pointer;" v-for="user in filterActiveUsers" v-on:click="seeUser(user.id)" :key="user.id">
+          {{user.first_name }} /// {{user.last_name}}
         </li>
 
           <!-- <appUser v-for="user in users" :key="user.id" :user="user"></appUser> -->
@@ -22,7 +23,8 @@ export default {
   name: 'users',
   data () {
     return {
-      users: []
+      users: [],
+      showUsers: 'active'
     }
   },
   created(){
@@ -46,6 +48,14 @@ export default {
   },
   components: {
       appUser: User
+    },
+  computed: {
+      filterActiveUsers(){
+        let active = this.showUsers;
+        return this.users.filter( function(user) {
+          return user.status == active;
+      })
+    }
     }
   }
 </script>

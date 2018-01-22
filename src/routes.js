@@ -10,6 +10,7 @@ import Groups from './components/Groups.vue'
 import Group from './components/Group.vue'
 import SingleUser from './components/SingleUser.vue'
 import Landing from './components/Landing.vue'
+import Email from './components/Email.vue'
 
 Vue.use(Router)
 
@@ -48,6 +49,11 @@ let router = new Router({ routes : [
     name: 'landing',
     components: {default: Landing}
   },
+  {
+    path: '/email',
+    name: 'email',
+    components: {default: Email}
+  }
   /*{
     path: '*',
     redirect: {name: 'group'}}*/
