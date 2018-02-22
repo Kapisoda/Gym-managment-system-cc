@@ -1,31 +1,45 @@
 <template>
-  <div>
-      <h1>Login</h1>
-
-      <input type="text" v-model="object.admin.username" placeholder="Username"/>
-      <input type="password" v-model="object.admin.password" placeholder="Password"/>
-      <br />
-      <p>
-        {{object.admin.username}}  / {{object.admin.password}}
-      </p>
-        <button v-on:click="login_user()">login</button>
-      </hr>
-
-
-      <div v-if="error">
-        <p>
-            Pogrešno ime ili lozinka, pokušajte ponovo.
-        </p>
-      </div>
-      
-
+<div class="loginBackground">
+  <div class="container white z-depth-2">
+    <div id="login" class="col s12">
+      <form class="col s12">
+        <div class="form-container">
+          <center>
+            <h3 class="teal-text">PRIJAVA</h3>
+          </center>
+          <div class="row">
+            <div class="input-field col s12">
+              <input id="username" type="text" class="validate" v-model="object.admin.username">
+              <label for="username">Korisničko ime</label>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input id="password" type="password" class="validate" v-model="object.admin.password">
+              <label for="password">Lozinka</label>
+            </div>
+          </div>
+          <center>
+            <p v-if="error!=false" class="error-login">Pogrešno korisničko ime ili lozinka</p>
+          </center>
+          <br>
+          <center>
+            <button type="button" class="btn waves-effect waves-light teal" name="action" v-on:click="login_user()">Prijavi se</button>
+            <br>
+          </center>
+        </div>
+      </form>
+    </div>
   </div>
+</div>
 </template>
 
 <script>
 import Api from '../Api.js'
 import res from '../Resources.js'
 import session from '../Session.js'
+import EventBus from '../EventBus.js'
+
 export default {
   name: 'login',
   data () {
@@ -35,11 +49,13 @@ export default {
         username: "adminko",
         password: "asdfasdf"
       }},
-      error: false
+      error: false,
+      isActive: true
     }
   },
   methods: {
       login_user(){
+        let check = false;
       this.$http.post('https://gym-management-system-cc.herokuapp.com/api/v1/sessions/create', this.object).then(response => {
         // success callback
         this.error = false;
@@ -47,7 +63,7 @@ export default {
       }, error => {
         // error callback
         if(error.status){
-          console.log('error is: '+error.status);
+          console.log(`error is ${error.status}`);
           this.error = true;
       }
       }).then(data => {
@@ -59,14 +75,15 @@ export default {
           res.auth_token= data.admin.auth_token;
           res.login=true;
           session.setSession(data.admin.username, data.admin.auth_token);
-
-          this.$router.push({ path: '/landing'});
+          //window.sessionStorage.setItem('token', data.admin.auth_token);
+          this.$router.push({ path: '/users'});
         }
       });
     }
+    }
   }
-}
 </script>
 
-<style>
+<style scoped>
+@import '../assets/login.scss'
 </style>

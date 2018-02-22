@@ -1,0 +1,51 @@
+<template>
+  <div class="row">
+    <form class="col s12">
+      <h3 class="title">Nova grupa</h3>
+      <div class="row">
+        <div class="input-field col s12">
+          <input id="name" type="text" class="validate" v-model="object.group.name">
+          <label for="name">Naziv Grupe</label>
+        </div>
+      </div>
+    </form>
+    <center>
+      <button class="btn waves-effect waves-light teal" v-on:click="createNewGroup" >Kreiraj novu članarinu</button>
+    </center>
+  </div>
+</template>
+
+<script>
+export default {
+  data(){
+    return{
+      object: {
+        group: {
+          name: ''
+        }
+      }
+    }
+  },
+  methods: {
+    createNewGroup(){
+      this.$http.post('https://gym-management-system-cc.herokuapp.com/api/v1/groups/create', this.object).then(response => {
+        // success callback
+        this.error = false;
+        return response.json();
+      }, error => {
+        // error callback
+        if(error.status){
+          this.error = true;
+      }
+      }).then(data => {
+        //obrada podataka
+        console.log('prošlo');
+      });
+      location.reload();
+    }
+  }
+}
+</script>
+
+<style lang="css">
+</style>

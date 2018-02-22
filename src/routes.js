@@ -9,8 +9,10 @@ import User from './components/User.vue'
 import Groups from './components/Groups.vue'
 import Group from './components/Group.vue'
 import SingleUser from './components/SingleUser.vue'
-import Landing from './components/Landing.vue'
 import Email from './components/Email.vue'
+import Memberships from './components/Memberships.vue'
+import ConfirmCardUser from './components/ConfirmCardUser.vue'
+import Home from './components/Home.vue'
 
 Vue.use(Router)
 
@@ -45,15 +47,27 @@ let router = new Router({ routes : [
     components: {default: Group}
   },
   {
-    path: '/landing',
-    name: 'landing',
-    components: {default: Landing}
-  },
-  {
     path: '/email',
     name: 'email',
     components: {default: Email}
+  },
+  {
+    path: '/memberships',
+    name: 'memberships',
+    components: {default: Memberships}
+  },
+  {
+    path: '/confirmCardUser',
+    name: 'confirmCardUser',
+    components: {default: ConfirmCardUser}
+  },
+  {
+    path: '/home',
+    name: 'home',
+    components: {default: Home}
   }
+
+
   /*{
     path: '*',
     redirect: {name: 'group'}}*/
@@ -65,11 +79,9 @@ router.beforeEach((to, from, next) => {
   //console.log('In before each')
   if (to.path == '/login'){
     next()
-  }else if (!session.getSessionAuth_token()) {
-    console.log('token does not exist')
+  }else if (!session.getSessionAuth_token()){ // !window.sessionStorage.getItem('token')
     next({ path: '/login' })
   } else {
-    console.log('token exist')
     next()
   }
 })

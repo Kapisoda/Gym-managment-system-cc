@@ -1,81 +1,259 @@
 <template>
-  <div>
-      <a>Users</a>
-      <button v-on:click="showUsers='active'">Active users</button><button v-on:click="showUsers='deactive'">Deactive users</button>
-      <hr />
-      search: <input type="text" v-model="search" />
-      <ul>
-     <li class="list-group-item" style="cursor: pointer;" v-for="user in filterUsersSerch" v-on:click="seeUser(user.id)" :key="user.id">
-          {{user.first_name }} /// {{user.last_name}}
-        </li>
-        <button v-on:click="show">modal</button>
-          <!-- <appUser v-for="user in users" :key="user.id" :user="user"></appUser> -->
-          <modal name="email">
-            <appEmail></appEmail>
-          </modal>
-      </ul>
-  </div>
+<div class="users" >
+  <appNavbar></appNavbar>
+          <div class="row">
+            <div class="col s3">
+              <!-- Grey navigation panel -->
+
+              <!-- <p><button class="waves-effect waves-light btn" v-on:click="showUsers='active'">Active users</button></p>
+              <p><button class="waves-effect waves-light btn" v-on:click="showUsers='inactive'">Inactive users</button></p>-->
+              <p>Po korisnicima:</p>
+              <v-select v-model="filterArray" :options="[{ label: 'Aktivni', value: 'active'},{ label: 'Neaktivni', value: 'inactive'}]"></v-select>
+              <p>Po grupama:</p>
+              <v-select v-model="groupOption" :options="groups"></v-select>
+              <p>Po članarinama:</p>
+              <v-select v-model="membershipOption" :options="membershipsForPick"></v-select>
+
+              <p>M/Ž:</p>
+              <v-select v-model="filterArrayGender" :options="[{ label: 'M', value: 'm'},{ label: 'Ž', value: 'ž'}]"></v-select>
+
+
+            </div>
+            <div class="col s9">
+              <p>Pretraga:</p>
+              <p><input type="text" v-model="search" /></p>
+              <table id="customers">
+              <tr>
+                <th><input type="checkbox" id="myTextEditBoxIsFull" value="myTextEditBoxIsFull" v-on:click="chooseAll">
+                <label for="myTextEditBoxIsFull"></label></th>
+                <th
+                  style="cursor: pointer;"
+                  v-on:click="stringForSort='first_name'; activeClassFunction();"
+                  >Ime <a class="headerIcons" v-if="stringForSort=='first_name'">
+                    <i :class="activeClass" ></i></a>
+                </th>
+                <th style="cursor: pointer;"
+                  v-on:click="stringForSort='last_name'; activeClassFunction();"
+                  >Prezime <a class="headerIcons" v-if="stringForSort=='last_name'">
+                    <i :class="activeClass"></i></a>
+                  </th>
+                <th>Mail</th>
+                <th style="cursor: pointer;"
+                id="checkboxSpecial"
+                v-on:click=" stringForSort='id'; activeClassFunction();"
+                >Id <a class="headerIcons" v-if="stringForSort=='id'">
+                  <i :class="activeClass"></i></a></th>
+                <th>Status</th>
+                <th>M/Ž</th>
+                <th>Članarine</th>
+                <th>Grupe</th>
+              </tr>
+              <tr class="list-group-item" style="cursor: pointer;" v-for="user in filterUsersSerch"  :key="user.id">
+                <td><input type="checkbox" v-bind:id="user.id" v-bind:value="user.id" v-model="myTextEditBox">
+                <label v-bind:for="user.id"></label></td>
+                <td v-on:click="singleUser(user.id)">{{user.first_name }}</td>
+                <td v-on:click="singleUser(user.id)">{{user.last_name}}</td>
+                <td v-on:click="singleUser(user.id)">{{user.email}}</td>
+                <td v-on:click="singleUser(user.id)">{{user.id}}</td>
+                <td v-on:click="singleUser(user.id)">{{user.status}}</td>
+                <td v-on:click="singleUser(user.id)">{{user.sex}}</td>
+                <td v-on:click="singleUser(user.id)"><p v-for="mem in user.membership_types">{{mem.name}}</p></td>
+                <td v-on:click="singleUser(user.id)"><p v-for="gro in user.groups">{{gro.name}}</p></td>
+              </tr>
+            </table>
+            </div>
+          </div>
+
+
+          <a class="button-floater right btn-floating btn-large waves-effect waves-light red" v-on:click="startNewUser"><i class="material-icons">add</i></a>
+            <!--<button v-on:click="show">modal</button> -->
+                <modal name="email">
+                  <appEmail></appEmail>
+                </modal>
+                <modal name="newUser" :scrollable="true" :draggable="true" height="auto" >
+                  <appNewUser ></appNewUser>
+                </modal>
+                <modal name="singleUser" :scrollable="true" :draggable="true" height="auto">
+                  <appSingleUser :singleUserObject="singleUserObj"></appSingleUser>
+                </modal>
+</div>
 </template>
 
-<script>
+<script >
 import EventBus from '../EventBus.js'
-import session from '../Session.js'
+import Navbar from './Navbar.vue'
 import Email from './Email.vue'
-
 import User from './User.vue'
+import NewUser from './NewUser.vue'
+import filter from '../Filter.js'
+import SingleUser from './SingleUser.vue'
+
 
 export default {
+
   name: 'users',
-  data () {
+  data() {
     return {
+      activeClass: '',
+      ascDesc: '',
+      stringForSortCheck: '',
+      stringForSort: 'first_name',
       users: [],
-      showUsers: 'active',
-      search: ''
+      searchCards: '',
+      search: '',
+      myTextEditBox: [],
+      myTextEditBoxIsFull: false,
+      groups: [],
+      groupOption: null,
+      filterArray: null,
+      filterArrayGroups: null,
+      filterArrayGender: '',
+      //članarine
+      memberships: [],
+      membershipsForPick: [],
+      membershipOption: null,
+      //objekt
+      singleUserObj: {}
     }
   },
-  created(){
-      this.$http.get('https://gym-management-system-cc.herokuapp.com/api/v1/users/index').then(response => {
+  watch: {
+   searchCards: function(val, oldVal) {
+     var self = this;
+     let i=0;
+     this.users.forEach(function(x) {
+       if(x.name==val){
+         self.singleUserObj=x;
+       }
+       i++;
+     });
+     this.$modal.show('singleUser');
+
+   }
+ },
+  created() {
+    //dohvacanje svih usera
+    this.$http.get('https://gym-management-system-cc.herokuapp.com/api/v1/users/index').then(response => {
+      return response.json();// success callback
+    }, error => {  /*rror callback*/  }).then(data => {/*obrada podataka*/ this.users = data.users;});
+
+    //dohvacanje svih grupa
+    this.$http.get('https://gym-management-system-cc.herokuapp.com/api/v1/groups/index').then(response => {
+      return response.json(); // success callback
+    }, error => { /* error callback*/ }).then(data => { /*obrada podataka*/
+      var self = this;
+      data.groups.map(x => {
+        let obj = {
+          label: x.name,
+          value: x.id}
+          self.groups.push(obj);
+      });
+    });
+
+    //dohvaćanje svih članarina
+    this.$http.get('https://gym-management-system-cc.herokuapp.com/api/v1/membership_types/index').then(response => {
       // success callback
       return response.json();
-    }, error => {
-      // error callback
-      console.log('users nije prošlo');
-    }).then(data => {
-      //obrada podataka
-      this.users= data.users;
+    }, error => { /* error callback */ }).then(data => {
+      /*obrada podataka*/
+      this.memberships= data.membership_types;
+      data.membership_types.map(x => {
+        let obj = {
+          label: x.name,
+          value: x.id}
+          this.membershipsForPick.push(obj);
+      });
     });
   },
-  methods:{
-    seeUser(index){
-      //EventBus.$emit('userSpec', index);
-      //this.$router.push({ path: '/user'});
-      this.$router.push({ name: 'singleUser', params: { id: index }});
+  methods: {
+    activeClassFunction(){
+      if(this.stringForSortCheck!=this.stringForSort){
+        this.ascDesc = 'desc';
+      }
+        if(this.ascDesc == 'desc'){
+          this.activeClass = 'hover_icon fa fa-sort-down';
+          this.ascDesc = 'asc';
+        }else{
+          this.activeClass = 'hover_icon fa fa-sort-up';
+          this.ascDesc = 'desc';
+        }
+      this.stringForSortCheck=this.stringForSort;
+
     },
-    show () {
-    this.$modal.show('email');
+    chooseAll(){
+          let temp = [];
+          if(!this.myTextEditBoxIsFull){
+          this.myTextEditBox = filter.foo(this.users, this.filterArray, this.stringForSort, this.search, this.ascDesc, this.membershipOption, this.groupOption, this.filterArrayGender);
+          this.myTextEditBox.forEach(function(el){
+            temp.push(el.id);
+            return el.id;
+          });
+          this.myTextEditBox = temp;
+        }else{
+          this.myTextEditBox = [];
+        }
+        this.myTextEditBoxIsFull = !this.myTextEditBoxIsFull
     },
-    hide () {
-    this.$modal.hide('email');
-  }
-  },
-  components: {
-      appUser: User
+    startNewUser() {
+      this.$modal.show('newUser');
     },
-  computed: {
-    filterUsersSerch(){
-      let self = this;
-      return this.users.filter(function(user){
-        let fullname = user.first_name+' '+user.last_name
-        return fullname.toLowerCase().indexOf(self.search.toLowerCase())>=0 && user.status == self.showUsers;
+    singleUser(id){
+      var self = this;
+      let i=0;
+      this.users.forEach(function(x) {
+        if(x.id==id){
+          self.singleUserObj=x;
+        }
+        i++;
       });
+
+      this.$modal.show('singleUser');
+    }
+  },
+  computed: {
+    filterUsersSerch() {
+      return filter.foo(this.users, this.filterArray, this.stringForSort, this.search, this.ascDesc, this.membershipOption, this.groupOption, this.filterArrayGender);
     }
   },
   components: {
-    appEmail: Email
+    appEmail: Email,
+    appNewUser: NewUser,
+    appUser: User,
+    appNavbar: Navbar,
+    appSingleUser: SingleUser
   }
-  }
+}
 </script>
 
 <style>
+.button-floater{
+  position: fixed;
+    bottom: 1em;
+    right: 1em;
+}
+.headerIcons{
+  color: white
+}
+#customers {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#customers td, #customers th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#customers tr:nth-child(even){background-color: #f2f2f2;}
+
+#customers tr:hover {background-color: #ddd;}
+
+#customers th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #7E8F7C;
+    color: white;
+}
 
 </style>

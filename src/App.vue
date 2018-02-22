@@ -1,37 +1,51 @@
 <template>
   <div id="app">
-      <router-link to="login">Login</router-link>
+    <main>
       <router-view></router-view>
-
+    </main>
   </div>
 </template>
 
 <script>
+import EventBus from './EventBus.js';
+import NavBar from './components/Navbar.vue'
 import Users from './components/Users.vue'
 import Login from './components/Login.vue'
-import test from './testfunkcija.js'
+import session from './Session.js'
+import {fixedActionButton} from "vue-materialize"
 
 export default {
   name: 'app',
   data () {
     return {
-      a: 0,
-      b: 0,
-      x: 0
+      login: false
     }
   },
   components: {
+    appNavBar: NavBar,
     appUsers: Users,
-    appLogin: Login
+    appLogin: Login,
+    "fab": fixedActionButton
   },
-  methods: {
-    foo(a,b){
-      this.x=test.mno(a,b);
+  mounted() {
+    /* EventBus.$on('checkUserLogin', (check) => {
+        this.login = check;
+      }); */
+
+      this.login = session.getSessionUsername();
+  },
+  watch: {
+    login(){
+
+        return this.login = session.getSessionUsername();
+      //return this.$store.getters.userLogin
+       //this.login = window.localStorage.getItem("loging");
     }
   }
 }
+
 </script>
 
 <style lang="scss">
-
+@import './assets/style.scss'
 </style>

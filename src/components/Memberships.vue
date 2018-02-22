@@ -1,0 +1,117 @@
+<template lang="html">
+<div class="memberships">
+  <appNavbar></appNavbar>
+  <div class="row">
+    <div class="col s3">
+      <br />
+      <center>
+          <button type="button" class="btn waves-effect waves-light teal" name="action" v-on:click="createMembership()">Kreiraj novu vrstu članarine</button>
+      </center>
+      
+
+
+    </div>
+    <div class="col s9">
+      <table id="customers">
+      <tr>
+        <th>Naziv članarine</th>
+        <th>Tjedni broj dolazaka</th>
+        <th>Sati restrikcija</th>
+      </tr>
+      <tr class="list-group-item" style="cursor: pointer;" v-for="membership in memberships"  :key="membership.id">
+        <td v-on:click="seeMembership(membership.id)" >{{membership.name}}</td>
+        <td v-on:click="seeMembership(membership.id)" >{{membership.max_week_attendance_restriction}}</td>
+        <td v-on:click="seeMembership(membership.id)" >{{membership.after_hour_restriction}}</td>
+      </tr>
+    </table>
+    </div>
+  </div>
+  <modal name="createMembershipModal" :scrollable="true" :draggable="true" height="auto">
+    <appNewMembership></appNewMembership>
+  </modal>
+  <modal name="singleMembership" :scrollable="true" :draggable="true" height="auto">
+    <appSingleMembership :singleMembershipObject="singleMembershipObj"></appSingleMembership>
+  </modal>
+</div>
+
+</template>
+
+<script>
+import Navbar from './Navbar.vue'
+import NewMembership from './NewMembership.vue'
+import SingleMembership from './SingleMembership.vue'
+import Datepicker from 'vuejs-datepicker'
+
+export default {
+  name: 'memberships',
+  data(){
+    return{
+      memberships: [],
+      singleMembershipObj: {}
+    }
+  },
+  created(){
+    //dohvacanje svih članarina
+    this.$http.get('https://gym-management-system-cc.herokuapp.com/api/v1/membership_types/index').then(response => {
+      // success callback
+      return response.json();
+    }, error => {
+      // error callback
+    }).then(data => {
+      //obrada podataka
+      this.memberships= data.membership_types;
+    });
+
+
+  },
+  methods:{
+    createMembership(){
+      this.$modal.show('createMembershipModal');
+    },
+    seeMembership(id){
+      var self = this;
+      this.memberships.forEach(function(x) {
+        if(x.id==id){
+          self.singleMembershipObj=x;
+        }
+      });
+      console.log(this.singleMembershipObj);
+      this.$modal.show('singleMembership');
+    }
+  },
+  components: {
+    appNavbar: Navbar,
+    appNewMembership: NewMembership,
+    appSingleMembership: SingleMembership,
+    Datepicker
+  }
+}
+</script>
+
+<style lang="css">
+.ej{
+  color: red !important;
+}
+#customers {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#customers td, #customers th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#customers tr:nth-child(even){background-color: #f2f2f2;}
+
+#customers tr:hover {background-color: #ddd;}
+
+#customers th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #7E8F7C;
+    color: white;
+}
+</style>

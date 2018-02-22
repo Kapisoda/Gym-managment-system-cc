@@ -1,0 +1,247 @@
+<template lang="html">
+  <div class="users" v-on:click='searchUserCard'>
+    <appNavbar></appNavbar>
+            <div class="row">
+              <div class="col s3">
+                <!-- Grey navigation panel -->
+
+              <!--  <input type="text" v-on:input="stringCard" :autofocus="isAutofocus" />-->
+                <p><input onblur="this.focus()" type="text" v-model="stringCard" autofocus/></p>
+
+              </div>
+              <div class="col s9">
+                <table id="customers">
+                <tr>
+                  <th><input type="checkbox" id="myTextEditBoxIsFull" value="myTextEditBoxIsFull" v-on:click="chooseAll">
+                  <label for="myTextEditBoxIsFull"></label></th>
+                  <th
+                    style="cursor: pointer;"
+                    v-on:click="stringForSort='first_name'; activeClassFunction();"
+                    >Ime <a class="headerIcons" v-if="stringForSort=='first_name'">
+                      <i :class="activeClass" ></i></a>
+                  </th>
+                  <th style="cursor: pointer;"
+                    v-on:click="stringForSort='last_name'; activeClassFunction();"
+                    >Prezime <a class="headerIcons" v-if="stringForSort=='last_name'">
+                      <i :class="activeClass"></i></a>
+                    </th>
+                  <th>Mail</th>
+                  <th style="cursor: pointer;"
+                  id="checkboxSpecial"
+                  v-on:click=" stringForSort='id'; activeClassFunction();"
+                  >Id <a class="headerIcons" v-if="stringForSort=='id'">
+                    <i :class="activeClass"></i></a></th>
+                  <th>Status</th>
+                  <th>M/Ž</th>
+                  <th>Članarine</th>
+                </tr>
+                <tr class="list-group-item" style="cursor: pointer;" v-for="user in filterUsersSerch"  :key="user.id">
+                  <td><input type="checkbox" v-bind:id="user.id" v-bind:value="user.id" v-model="myTextEditBox">
+                  <label v-bind:for="user.id"></label></td>
+                  <td v-on:click="singleUser(user.id)">{{user.first_name }}</td>
+                  <td v-on:click="singleUser(user.id)">{{user.last_name}}</td>
+                  <td v-on:click="singleUser(user.id)">{{user.email}}</td>
+                  <td v-on:click="singleUser(user.id)">{{user.id}}</td>
+                  <td v-on:click="singleUser(user.id)">{{user.status}}</td>
+                  <td v-on:click="singleUser(user.id)"></td>
+                  <td v-on:click="singleUser(user.id)"><p v-for="mem in user.membership_types">{{mem.name}}</p></td>
+                </tr>
+              </table>
+              </div>
+            </div>
+
+
+          
+                  <modal name="singleUser" :scrollable="true" :draggable="true" height="auto">
+                    <appSingleUser :singleUserObject="singleUserObj"></appSingleUser>
+                  </modal>
+  </div>
+</template>
+
+<script>
+
+import EventBus from '../EventBus.js'
+import Navbar from './Navbar.vue'
+import Email from './Email.vue'
+import User from './User.vue'
+import NewUser from './NewUser.vue'
+import filter from '../Filter.js'
+import SingleUser from './SingleUser.vue'
+
+
+export default {
+
+  name: 'confirmCardUser',
+  data() {
+    return {
+      activeClass: '',
+      ascDesc: '',
+      stringForSortCheck: '',
+      stringForSort: 'first_name',
+      users: [],
+      stringCard: '',
+      isAutofocus: true,
+      search: '',
+      myTextEditBox: [],
+      myTextEditBoxIsFull: false,
+      groups: [],
+      filterArray: null,
+      filterArrayGroups: null,
+      filterArrayGender: null,
+      //članarine
+      memberships: [],
+      membershipsForPick: [],
+      membershipOption: null,
+      //objekt
+      singleUserObj: {}
+    }
+  },
+  watch:{
+    stringCard(){
+      console.log(this.stringCard);
+      if(_.includes(this.stringCard, '_')){
+        var self = this;
+        let i=0;
+        this.users.forEach(function(x) {
+          if(x.first_name==self.stringCard){
+            self.singleUserObj=x;
+          }
+          i++;
+        });
+        this.$modal.show('singleUser');
+      };
+    }
+  },
+  created() {
+    //dohvacanje svih usera
+    this.$http.get('https://gym-management-system-cc.herokuapp.com/api/v1/users/index').then(response => {
+      return response.json();// success callback
+    }, error => {  /*rror callback*/  }).then(data => {/*obrada podataka*/ this.users = data.users;});
+
+    //dohvacanje svih grupa
+    this.$http.get('https://gym-management-system-cc.herokuapp.com/api/v1/groups/index').then(response => {
+      return response.json(); // success callback
+    }, error => { /* error callback*/ }).then(data => { /*obrada podataka*/
+      var self = this;
+      data.groups.map(x => {
+        let obj = {
+          label: x.name,
+          value: x.value}
+          self.groups.push(obj);
+      });
+    });
+
+    //dohvaćanje svih članarina
+    this.$http.get('https://gym-management-system-cc.herokuapp.com/api/v1/membership_types/index').then(response => {
+      // success callback
+      return response.json();
+    }, error => { /* error callback */ }).then(data => {
+      /*obrada podataka*/
+      this.memberships= data.membership_types;
+      data.membership_types.map(x => {
+        let obj = {
+          label: x.name,
+          value: x.id}
+          this.membershipsForPick.push(obj);
+      });
+    });
+  },
+  methods: {
+    searchUserCard(){
+
+      this.search= '';
+
+    },
+    activeClassFunction(){
+      if(this.stringForSortCheck!=this.stringForSort){
+        this.ascDesc = 'desc';
+      }
+        if(this.ascDesc == 'desc'){
+          this.activeClass = 'hover_icon fa fa-sort-down';
+          this.ascDesc = 'asc';
+        }else{
+          this.activeClass = 'hover_icon fa fa-sort-up';
+          this.ascDesc = 'desc';
+        }
+      this.stringForSortCheck=this.stringForSort;
+
+    },
+    chooseAll(){
+          let temp = [];
+          if(!this.myTextEditBoxIsFull){
+          this.myTextEditBox = filter.foo(this.users, this.filterArray, this.stringForSort, this.search, this.ascDesc, this.membershipOption);
+          this.myTextEditBox.forEach(function(el){
+            temp.push(el.id);
+            return el.id;
+          });
+          this.myTextEditBox = temp;
+        }else{
+          this.myTextEditBox = [];
+        }
+        this.myTextEditBoxIsFull = !this.myTextEditBoxIsFull
+    },
+    startNewUser() {
+      this.$modal.show('newUser');
+    },
+    singleUser(id){
+      var self = this;
+      let i=0;
+      this.users.forEach(function(x) {
+        if(x.id==id){
+          self.singleUserObj=x;
+        }
+        i++;
+      });
+      console.log(this.singleUserObj);
+      this.$modal.show('singleUser');
+    }
+  },
+  computed: {
+    filterUsersSerch() {
+      return filter.foo(this.users, this.filterArray, this.stringForSort, this.search, this.ascDesc, this.membershipOption);
+    }
+  },
+  components: {
+    appEmail: Email,
+    appNewUser: NewUser,
+    appUser: User,
+    appNavbar: Navbar,
+    appSingleUser: SingleUser
+  }
+}
+
+</script>
+
+<style>
+.button-floater{
+  position: fixed;
+    bottom: 1em;
+    right: 1em;
+}
+.headerIcons{
+  color: white
+}
+#customers {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#customers td, #customers th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#customers tr:nth-child(even){background-color: #f2f2f2;}
+
+#customers tr:hover {background-color: #ddd;}
+
+#customers th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #7E8F7C;
+    color: white;
+}
+
+</style>
