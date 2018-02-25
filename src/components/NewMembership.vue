@@ -16,8 +16,8 @@
       </div>
       <div class="row">
         <div class="input-field col s12">
-          <input id="after_hour_restriction" type="text" class="validate" v-model="object.membership_type.after_hour_restriction">
-          <label  for="after_hour_restriction">Sati restrikcija</label>
+          <input id="after_hour_restriction" type="time" class="validate" v-model="object.membership_type.after_hour_restriction">
+          <label  class="active" for="after_hour_restriction">Sati restrikcija</label>
         </div>
       </div>
     </form>
@@ -41,6 +41,9 @@ export default {
    }
  },
  methods: {
+   timeRestriction(){
+     this.object.membership_type.after_hour_restriction=moment(this.object.membership_type.after_hour_restriction).format(',HH:MM');
+   },
    createNewMembership(){
      this.$http.post('https://gym-management-system-cc.herokuapp.com/api/v1/membership_types/create', this.object).then(response => {
        // success callback

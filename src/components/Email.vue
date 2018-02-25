@@ -1,15 +1,29 @@
 <template>
   <form enctype="text/plain">
-    Name:<br>
-    <input type="text" name="name"><br>
-    E-mail:<br>
-    <input type="text" name="mail"><br>
-    Subject:<br>
-    <input type="text" name="subject"><br>
-    Message:<br>
-    <input type="text" name="message" size="50" class="message_text"><br><br>
-    <input type="submit" value="Send">
-    <input type="reset" value="Reset">
+    <div class="row">
+      <center>
+        <h3 class="title">Email</h3>
+      </center>
+    </div>
+    <div class="row">
+      <div class="col s12">
+        <label for="subjekt">Subjekt</label>
+        <input id="subjekt" type="text" class="validate" v-model="subject">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col s12">
+        <label class="active" for="message">Poruka</label>
+        <textarea wrap="off" rows="50" cols="40" v-model="message"></textarea>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col s12">
+      <center>
+          <button type="button" class="btn waves-effect waves-light teal" name="action" v-on:click="sendMail">Pošalji mail <i class="fa fa-envelope-o"></i></button>
+      </center>
+    </div>
+  </div>
 </form>
 
 </template>
@@ -17,11 +31,18 @@
 <script>
 
 export default {
-  data(){
-  name: 'email'
-  return {
+    name: 'email',
+    props:['usersForSendingMail'],
+    data(){
+    return {
+      subject: '',
+      message: ''
+    }
+  },
+  methods:{
+    sendMail(){
 
-  }
+    }
   }
 }
 

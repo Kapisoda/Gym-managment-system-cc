@@ -17,7 +17,7 @@
       </div>
       <div class="row">
         <div class="input-field col s12">
-          <input :disabled="disabled" id="sati" type="text" class="validate" v-model="object.membership_type.after_hour_restriction">
+          <input :disabled="disabled" id="sati" type="time" class="validate" v-model="object.membership_type.after_hour_restriction">
           <label class="active" for="sati">Sati restrikcija</label>
         </div>
       </div>

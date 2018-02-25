@@ -10,7 +10,7 @@
       </div>
     </form>
     <center>
-      <button class="btn waves-effect waves-light teal" v-on:click="createNewGroup" >Kreiraj novu članarinu</button>
+      <button class="btn waves-effect waves-light teal" v-on:click="createNewGroup" >Kreiraj novu grupu</button>
     </center>
   </div>
 </template>

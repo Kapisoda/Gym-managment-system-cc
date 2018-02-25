@@ -4,10 +4,7 @@
       <h3 class="title">Nova poruka</h3>
       <div class="row">
         <div class="input-field col s12">
-          <!--<input :disabled="disabled" id="name" type="text" class="validate">
-          <label class="active" for="name">Poruka</label>-->
-          <textarea rows="8" cols="40" v-model="test"></textarea>
-          {{test}}
+          <textarea rows="8" cols="40" v-model="object.note.body"></textarea>
         </div>
       </div>
     </form>
@@ -19,14 +16,38 @@
 </template>
 
 <script>
+import session from '../Session.js'
 export default {
   data(){
     return{
-      test: ''
+      object: {
+        note: {
+          body: '',
+          author: ''
+        }
+      },
+      error: false
     }
   },
   methods:{
-    createNewNote(){}
+    createNewNote(){
+      this.object.note.author = session.getSessionUsername();
+      this.$http.post('https://gym-management-system-cc.herokuapp.com/api/v1/notes/create', this.object).then(response => {
+        // success callback
+        this.error = false;
+        return response.json();
+      }, error => {
+        // error callback
+        console.log('nije prošlo');
+        if(error.status){
+          this.error = true;
+      }
+      }).then(data => {
+        //obrada podataka
+        console.log('prošlo');
+      });
+      location.reload();
+    }
   }
 }
 </script>

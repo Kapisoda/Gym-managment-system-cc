@@ -1,10 +1,16 @@
 <template>
-  <div>
+  <form>
    <div class="col s12" ><!--:test=test -->
       <div class= "row">
         <center>
           <h4>Novi korisnik</h4>
         </center>
+      </div>
+      <div class="row" v-if="errorsArray">
+        <div class="danger" v-for="errorMessage in errorsArray">
+          <p><strong>Oprez!</strong> {{errorMessage}}</p>
+      </div>
+
       </div>
       <div class="row">
         <div class="input-field col s6">
@@ -23,7 +29,7 @@
         </div>
         <div class="input-field col s6">
           <input id="OIB" type="text" class="validate" v-model="newUserObject.user.OIB">
-          <label for="OIB">OIB:</label>
+          <label for="OIB">OIB</label>
         </div>
       </div>
       <div class="row">
@@ -51,7 +57,7 @@
       <div class="row">
         <div class="input-field col s6">
           <input id="phoneNumber" type="text" class="validate" v-model="newUserObject.user.phone_number">
-          <label for="phoneNumber">Tel:</label>
+          <label for="phoneNumber">Tel</label>
         </div>
         <div class="input-field col s6">
           <label class="active" for="gender">Spol</label>
@@ -87,13 +93,13 @@
       <div class="row">
         <div class="field col s12">
           <center>
-          <a class="waves-effect waves-light btn" v-on:click="createNewUser">Kreiraj novog korisnika</a>
+          <a class="waves-effect waves-light btn" type="submit" value="Submit" v-on:click="createNewUser" >Kreiraj novog korisnika</a>
         </center>
         </div>
       </div>
 
     </div>
-</div>
+</form>
 </template>
 
 
@@ -133,43 +139,52 @@ export default {
       groupsForPick: [],
       groupOption: '',
       statusSelect: '',
-      genderSelect: ''
+      genderSelect: '',
+      errorsArray: []
 
     }
   },
   methods:{
     createNewUser(){
-      var self = this;
-      if(this.membershipOption){
-      this.membershipOption.forEach(function(el){
-        self.newUserObject.user.membership_type_ids.push(el.value);
-      });
-      }
-      console.log(this.groupOption);
-      if(this.groupOption){
-      this.groupOption.forEach(function(el){
-        self.newUserObject.user.group_ids.push(el.value);
-      });
-      }
+      this.errorsArray=[];
+      if(!this.newUserObject.user.first_name) this.errorsArray.push("Potrebo je upisati ime korisnika.");
+      if(!this.newUserObject.user.last_name) this.errorsArray.push("Potrebo je upisati prezime korisnika.");
+      if(!this.newUserObject.user.code) this.errorsArray.push("Potrebo je zapisati korisnikovu karticu.");
+      if(!this.statusSelect) this.errorsArray.push("Potrebo je odabrati aktivnost korisnika.");
+      if(!this.membershipOption || this.membershipOption.length == 0) this.errorsArray.push("Potrebo je odabrati članarinu korisnika.");
+      if(!this.groupOption || this.groupOption.length == 0) this.errorsArray.push("Potrebo je odabrati grupu korisnika.");
+      if(this.errorsArray.length == 0){
+        var self = this;
+        if(this.membershipOption){
+        this.membershipOption.forEach(function(el){
+          self.newUserObject.user.membership_type_ids.push(el.value);
+        });
+        }
+        if(this.groupOption){
+        this.groupOption.forEach(function(el){
+          self.newUserObject.user.group_ids.push(el.value);
+        });
+        }
 
-      this.newUserObject.user.status = this.statusSelect.value;
-      this.newUserObject.user.sex = this.genderSelect.value;
+        this.newUserObject.user.status = this.statusSelect.value;
+        this.newUserObject.user.sex = this.genderSelect.value;
 
-     this.$http.post('https://gym-management-system-cc.herokuapp.com/api/v1/users/create', this.newUserObject).then(response => {
-        // success callback
-        this.error = false;
-        return response.json();
-      }, error => {
-        // error callback
-        if(error.status){
-          console.log('error is: '+error.status);
-          this.error = true;
+       this.$http.post('https://gym-management-system-cc.herokuapp.com/api/v1/users/create', this.newUserObject).then(response => {
+          // success callback
+          this.error = false;
+          return response.json();
+        }, error => {
+          // error callback
+          if(error.status){
+            console.log('error is: '+error.status);
+            this.error = true;
+        }
+        }).then(data => {
+          //obrada podataka
+          console.log('prošlo');
+        });
+        location.reload();
       }
-      }).then(data => {
-        //obrada podataka
-        console.log('prošlo');
-      });
-      //location.reload();
     }
   },
   components: {
@@ -222,6 +237,10 @@ export default {
 
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+.danger {
+    background-color: #ffdddd;
+    border-left: 6px solid #f44336;
+}
 
 </style>

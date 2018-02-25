@@ -11,7 +11,6 @@ import Group from './components/Group.vue'
 import SingleUser from './components/SingleUser.vue'
 import Email from './components/Email.vue'
 import Memberships from './components/Memberships.vue'
-import ConfirmCardUser from './components/ConfirmCardUser.vue'
 import Home from './components/Home.vue'
 
 Vue.use(Router)
@@ -55,11 +54,6 @@ let router = new Router({ routes : [
     path: '/memberships',
     name: 'memberships',
     components: {default: Memberships}
-  },
-  {
-    path: '/confirmCardUser',
-    name: 'confirmCardUser',
-    components: {default: ConfirmCardUser}
   },
   {
     path: '/home',

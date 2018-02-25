@@ -7,7 +7,7 @@
       <center>
           <button type="button" class="btn waves-effect waves-light teal" name="action" v-on:click="createMembership()">Kreiraj novu vrstu članarine</button>
       </center>
-      
+
 
 
     </div>
@@ -41,7 +41,7 @@ import Navbar from './Navbar.vue'
 import NewMembership from './NewMembership.vue'
 import SingleMembership from './SingleMembership.vue'
 import Datepicker from 'vuejs-datepicker'
-
+import moment from 'moment'
 export default {
   name: 'memberships',
   data(){
@@ -59,7 +59,17 @@ export default {
       // error callback
     }).then(data => {
       //obrada podataka
-      this.memberships= data.membership_types;
+      var self = this;
+      //this.memberships= data.membership_types;
+      data.membership_types.forEach(function(el){
+        let obj={
+          id: el.id,
+          name: el.name,
+          max_week_attendance_restriction: el.max_week_attendance_restriction,
+          after_hour_restriction: moment(el.after_hour_restriction).format('HH:mm')
+        }
+        self.memberships.push(obj);
+      });
     });
 
 
@@ -111,7 +121,7 @@ export default {
     padding-top: 12px;
     padding-bottom: 12px;
     text-align: left;
-    background-color: #7E8F7C;
+    background-color: #43C69C;
     color: white;
 }
 </style>

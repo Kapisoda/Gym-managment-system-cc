@@ -8,7 +8,7 @@
               <!-- <p><button class="waves-effect waves-light btn" v-on:click="showUsers='active'">Active users</button></p>
               <p><button class="waves-effect waves-light btn" v-on:click="showUsers='inactive'">Inactive users</button></p>-->
               <p>Po korisnicima:</p>
-              <v-select v-model="filterArray" :options="[{ label: 'Aktivni', value: 'active'},{ label: 'Neaktivni', value: 'inactive'}]"></v-select>
+              <v-select v-model="filterArray" :options="[{ label: 'Aktivni', value: 'active'},{ label: 'Neaktivni', value: 'inactive'},{ label: 'Pauza', value: 'pause'}]"></v-select>
               <p>Po grupama:</p>
               <v-select v-model="groupOption" :options="groups"></v-select>
               <p>Po članarinama:</p>
@@ -16,7 +16,10 @@
 
               <p>M/Ž:</p>
               <v-select v-model="filterArrayGender" :options="[{ label: 'M', value: 'm'},{ label: 'Ž', value: 'ž'}]"></v-select>
-
+              </br>
+              <center>
+                  <button type="button" class="btn waves-effect waves-light teal" name="action" v-on:click="sendMail">Pošalji mail <i class="fa fa-envelope-o"></i></button>
+              </center>
 
             </div>
             <div class="col s9">
@@ -67,13 +70,13 @@
 
           <a class="button-floater right btn-floating btn-large waves-effect waves-light red" v-on:click="startNewUser"><i class="material-icons">add</i></a>
             <!--<button v-on:click="show">modal</button> -->
-                <modal name="email">
-                  <appEmail></appEmail>
+                <modal name="email" height="600px">
+                  <appEmail :usersForSendingMail="myTextEditBox"></appEmail>
                 </modal>
                 <modal name="newUser" :scrollable="true" :draggable="true" height="auto" >
-                  <appNewUser ></appNewUser>
+                  <appNewUser></appNewUser>
                 </modal>
-                <modal name="singleUser" :scrollable="true" :draggable="true" height="auto">
+                <modal name="singleUser" :scrollable="true" :draggable="true" height="auto" >
                   <appSingleUser :singleUserObject="singleUserObj"></appSingleUser>
                 </modal>
 </div>
@@ -165,6 +168,14 @@ export default {
     });
   },
   methods: {
+    sendMail(){
+      if(this.myTextEditBox.length<1){
+        alert('Potrebno je odabrati barem jednog člana za slanje maila');
+      }else {
+        this.$modal.show('email');
+      }
+
+    },
     activeClassFunction(){
       if(this.stringForSortCheck!=this.stringForSort){
         this.ascDesc = 'desc';
@@ -252,7 +263,7 @@ export default {
     padding-top: 12px;
     padding-bottom: 12px;
     text-align: left;
-    background-color: #7E8F7C;
+    background-color: #43C69C;
     color: white;
 }
 

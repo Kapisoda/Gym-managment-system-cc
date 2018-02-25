@@ -1,13 +1,12 @@
 <template >
   <nav>
-    <div class="nav-wrapper">
+    <div class="nav-change nav-wrapper">
 
       <ul class="left hide-on-med-and-down">
         <li><router-link to="home">Home</router-link></li>
-        <li><router-link to="groups">Grupe</router-link></li>
         <li><router-link to="users">Korisnici</router-link></li>
+        <li><router-link to="groups">Grupe</router-link></li>
         <li><router-link to="memberships">Članarine</router-link></li>
-        <li><router-link to="confirmCardUser">Čitać kartice</router-link></li>
       </ul>
       <ul class="right hide-on-med-and-down">
           <li><a v-on:click="singOut">Odjavi se</a></li>
@@ -40,7 +39,7 @@ name: 'navbar',
 
     }
   }
-}
+}//#43C69C
 </script>
 
 <style lang="css" scope>

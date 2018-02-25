@@ -1,5 +1,5 @@
 <template>
-  <div class="memberships">
+  <div class="groups" @keypress.enter.prevent="alert('ej')">
     <appNavbar></appNavbar>
     <div class="row">
       <div class="col s3">
@@ -20,6 +20,7 @@
         </tr>
       </table>
       </div>
+
     </div>
     <modal name="createGroupModal" :scrollable="true" :draggable="true" height="auto">
       <appNewGroup></appNewGroup>
@@ -27,20 +28,6 @@
     <modal name="seeGroupModal" :scrollable="true" :draggable="true" height="auto">
       <appGroup :singleGroupObject="singleGroupObj"></appGroup>
     </modal>
-    {{groups}}
-    <div class = 'chart'>
-    <!-- import font awesome for legend icons -->
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
-
-    <!--
-      Both the :data and :config properties are deeply reactive so any changes
-      to these will cause the chart to update.
-    -->
-    <chart-pie :data = 'chartData' :config = 'chartConfig'></chart-pie>
-  </div>
-
-
-
   </div>
   </div>
 </template>
@@ -49,18 +36,16 @@
 import Navbar from './Navbar.vue'
 import NewGroup from './NewGroup.vue'
 import Group from './Group.vue'
-import { ChartPie } from 'vue-d2b'
+
 
 export default {
   name: 'groups',
   data () {
     return {
-      chartData: [],
-              chartConfig (chart) {
-                  chart.donutRatio(0.5)
-                },
+
       groups: null,
-      singleGroupObj: {}
+      singleGroupObj: {},
+      test2: ''
     }
   },
   created(){
@@ -73,19 +58,15 @@ export default {
     }).then(data => {
       //obrada podataka
       this.groups = data.groups;
-      var self = this;
-      data.groups.forEach(function(el){
-        let obj={
-          label:  el.name,
-          value: el.id
-        }
-        self.chartData.push(obj);
-      });
+
     });
 
 
   },
   methods: {
+    test(){
+      alert('je');
+    },
     createGroup(){
       this.$modal.show('createGroupModal');
     },
@@ -102,16 +83,13 @@ export default {
   components:{
     appNavbar: Navbar,
     appNewGroup: NewGroup,
-    appGroup: Group,
-    ChartPie
+    appGroup: Group
   }
 }
 </script>
 
 <style>
-.chart{
-    height: 500px;
-  }
+
 #customers {
     font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
     border-collapse: collapse;
@@ -131,7 +109,7 @@ export default {
     padding-top: 12px;
     padding-bottom: 12px;
     text-align: left;
-    background-color: #7E8F7C;
+    background-color: #43C69C;;
     color: white;
 }
 </style>
