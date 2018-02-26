@@ -7,7 +7,7 @@ import router from './routes'
 import VueSession from 'vue-session'
 import VModal from 'vue-js-modal'
 import Tabs from 'vue-tabs-component'
-import jQuery from 'jQuery'
+import jQuery from 'jquery'
 import dropdown from 'vue-my-dropdown'
 import {store} from './store/store';
 import vSelect from 'vue-select'
