@@ -1,6 +1,8 @@
 <template lang="html">
 <div class="memberships">
   <appNavbar></appNavbar>
+  <loader v-if="loading.memberships"></loader>
+  <template v-else>
   <div class="row">
     <div class="col s3">
       <br />
@@ -29,11 +31,13 @@
   <modal name="singleMembership" :scrollable="true" :draggable="true" height="auto">
     <appSingleMembership :singleMembershipObject="singleMembershipObj"></appSingleMembership>
   </modal>
+  </template>
 </div>
 
 </template>
 
 <script>
+import Loader from './Loader.vue'
 import Navbar from './Navbar.vue'
 import NewMembership from './NewMembership.vue'
 import SingleMembership from './SingleMembership.vue'
@@ -46,18 +50,23 @@ export default {
     return{
       error: false,
       memberships: [],
-      singleMembershipObj: {}
+      singleMembershipObj: {},
+      loading:{
+        memberships: false
+      }
     }
   },
   created(){
     //dohvacanje svih članarina
+    this.loading.memberships = true;
     this.$http.get('https://gym-management-system-cc.herokuapp.com/api/v1/membership_types/index').then(response => {
       // success callback
+      this.loading.memberships = false;
       return response.json();
     }, error => {
       // error callback
       if(error.status){
-        alert(`Došlo je do pogreške ${error.status}`);
+        console.log(`Došlo je do pogreške ${error.status}`);
         if(error.status=='401')session.sessionDestroy();
         this.error = true;
       }
@@ -93,6 +102,7 @@ export default {
     }
   },
   components: {
+    Loader,
     appNavbar: Navbar,
     appNewMembership: NewMembership,
     appSingleMembership: SingleMembership,

@@ -1,6 +1,8 @@
 <template lang="html">
   <div>
     <appNavbar></appNavbar>
+    <loader v-if="loading.groups || loading.member_attendances || loading.users || loading.notes"></loader>
+    <template v-else>
     <div class="row" v-if="noUserError">
       <div class="col s12">
         <div class="danger">
@@ -42,16 +44,18 @@
       <modal name="singleUser" :scrollable="true" :draggable="true" height="auto">
         <appSingleUser :singleUserObject="singleUserObj"></appSingleUser>
       </modal>
-
+      </template>
   </div>
 </template>
 
 <script>
+import Loader from './Loader.vue'
 import NavBar from './Navbar.vue'
 import NewNote from './NewNote.vue'
 import SingleUser from './SingleUser.vue'
 import session from '../Session.js'
 import moment from 'moment'
+
 export default {
   name: 'home',
   data(){
@@ -71,15 +75,26 @@ export default {
       singleUserObj: null,
       noUserError: false,
       numberUnderline: 0,
-      focus: true
+      focus: true,
+      loading:{
+        notes: false,
+        groups: false,
+        member_attendances: false,
+        users: false
+      }
     }
   },
   created(){
+    this.loading.notes = true;
+    this.loading.groups = true;
+    this.loading.member_attendances = true;
+    this.loading.users = true;
     this.$http.get('https://gym-management-system-cc.herokuapp.com/api/v1/member_attendances/index').then(response => {
+      this.loading.member_attendances = false;
       return response.json();// success callback
     }, error => {
       if(error.status){
-      alert(`Došlo je do pogreške ${error.status}`);
+      console.log(`Došlo je do pogreške ${error.status}`);
       if(error.status=='401')session.sessionDestroy();
       this.error = true;
       } /*rror callback*/  }).then(data => {/*obrada podataka usersAttendance*/
@@ -102,6 +117,7 @@ export default {
     this.$http.get('https://gym-management-system-cc.herokuapp.com/api/v1/groups/index').then(response => {
     /*success callback*/ return response.json();}, error => {/* error callback*/}).then(data => {
         //obrada podataka*/
+        this.loading.groups = false;
         this.groups = data.groups;
         var self = this;
         data.groups.forEach(function(el){
@@ -109,16 +125,18 @@ export default {
         });
     });
     this.$http.get('https://gym-management-system-cc.herokuapp.com/api/v1/notes/index').then(response => {
+      this.loading.notes = false;
       return response.json();// success callback
     }, error => {
         if(error.status){
-        alert(`Došlo je do pogreške ${error.status}`);
+        console.log(`Došlo je do pogreške ${error.status}`);
         if(error.status=='401')session.sessionDestroy();
         this.error = true;
       } /*rror callback*/
     }).then(data => {/*obrada podataka*/  this.notes = data.notes.reverse();});
 
     this.$http.get('https://gym-management-system-cc.herokuapp.com/api/v1/users/index').then(response => {
+      this.loading.users = false;
       return response.json();// success callback
     }, error => {  /*rror callback*/  }).then(data => {/*obrada podataka*/
       this.users = data.users;
@@ -145,7 +163,6 @@ export default {
       var por = confirm("Jeste li sigurni da želite izbrisati poruku?");
       if(por){
       this.object.note.id = id;
-      alert(this.object.note.id);
       this.$http.post('https://gym-management-system-cc.herokuapp.com/api/v1/notes/destroy', this.object).then(response => {
       // success callback
         this.error = false;
@@ -153,7 +170,7 @@ export default {
       }, error => {
         // error callback
         if(error.status){
-          alert(`Došlo je do pogreške ${error.status}`);
+          console.log(`Došlo je do pogreške ${error.status}`);
           this.error = true;
       }
       }).then(data => {
@@ -167,7 +184,8 @@ export default {
   components:{
     appNavbar: NavBar,
     appNewNote: NewNote,
-    appSingleUser: SingleUser
+    appSingleUser: SingleUser,
+    Loader
 
   },
   watch:{

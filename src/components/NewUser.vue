@@ -187,7 +187,7 @@ export default {
         }, error => {
           // error callback
           if(error.status){
-            alert(`Došlo je do pogreške ${error.status}`);
+            console.logt(`Došlo je do pogreške ${error.status}`);
             this.error = true;
         }
         }).then(data => {
@@ -208,7 +208,7 @@ export default {
     }, error => {
       // error callback
       if(error.status){
-        alert(`error is ${error.status}`);
+        console.log(`error is ${error.status}`);
         if(error.status=='401')session.sessionDestroy();
         this.error = true;
       }
@@ -231,7 +231,7 @@ export default {
       return response.json();
     }, error => {
       if(error.status){
-        alert(`error is ${error.status}`);
+        console.log(`error is ${error.status}`);
         if(error.status=='401')session.sessionDestroy();
         this.error = true;
       }
