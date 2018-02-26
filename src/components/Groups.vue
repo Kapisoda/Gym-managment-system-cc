@@ -1,5 +1,5 @@
 <template>
-  <div class="groups" @keypress.enter.prevent="alert('ej')">
+  <div class="groups">
     <appNavbar></appNavbar>
     <div class="row">
       <div class="col s3">
