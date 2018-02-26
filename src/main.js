@@ -1,4 +1,7 @@
+
 import Vue from 'vue'
+bugsnagClient.use(bugsnag__vue())
+
 import App from './App.vue'
 import router from './routes'
 import VueSession from 'vue-session'
@@ -13,8 +16,9 @@ import Chartkick from 'chartkick'
 import VueChartkick from 'vue-chartkick'
 import Chart from 'chart.js'
 
-Vue.use(VueChartkick, { Chartkick })
 
+
+Vue.use(VueChartkick, { Chartkick })
 
 Vue.prototype._ = lodash
 
