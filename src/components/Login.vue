@@ -63,7 +63,7 @@ export default {
       }, error => {
         // error callback
         if(error.status){
-          console.log(`error is ${error.status}`);
+          alert(`error is ${error.status}`);
           this.error = true;
       }
       }).then(data => {

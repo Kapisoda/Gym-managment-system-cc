@@ -5,7 +5,6 @@ import session from './Session.js'
 
 import Login from './components/Login.vue'
 import Users from './components/Users.vue'
-import User from './components/User.vue'
 import Groups from './components/Groups.vue'
 import Group from './components/Group.vue'
 import SingleUser from './components/SingleUser.vue'
@@ -24,11 +23,6 @@ let router = new Router({ routes : [
     path: '/users',
     name: 'users',
     components: {default: Users}
-  },
-  {
-    path: '/user',
-    name: 'user',
-    components: {default: User}
   },
   {
     path: '/user/:id',

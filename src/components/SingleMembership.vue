@@ -41,6 +41,7 @@
 </template>
 
 <script>
+import session from '../Session.js'
 
 export default {
   props: ['singleMembershipObject'],
@@ -55,7 +56,8 @@ export default {
           after_hour_restriction: ''
         }
       },
-      disabled: true
+      disabled: true,
+      error: false
     }
   },
   methods:{
@@ -67,9 +69,10 @@ export default {
       }, error => {
         // error callback
         if(error.status){
-          console.log('error is: '+error.status);
+          alert(`error is ${error.status}`);
+          if(error.status=='401')session.sessionDestroy();
           this.error = true;
-      }
+        }
       }).then(data => {
         //obrada podataka
         this.object.membership_type = data.membership_type
@@ -84,12 +87,13 @@ export default {
       }, error => {
         // error callback
         if(error.status){
-          console.log('error is: '+error.status);
+          alert(`error is ${error.status}`);
+          if(error.status=='401')session.sessionDestroy();
           this.error = true;
-      }
+        }
       }).then(data => {
         //obrada podataka
-        console.log(data);
+
       });
       location.reload();
     }

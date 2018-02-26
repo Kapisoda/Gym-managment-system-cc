@@ -7,9 +7,6 @@
       <center>
           <button type="button" class="btn waves-effect waves-light teal" name="action" v-on:click="createMembership()">Kreiraj novu vrstu članarine</button>
       </center>
-
-
-
     </div>
     <div class="col s9">
       <table id="customers">
@@ -42,10 +39,12 @@ import NewMembership from './NewMembership.vue'
 import SingleMembership from './SingleMembership.vue'
 import Datepicker from 'vuejs-datepicker'
 import moment from 'moment'
+import session from '../Session.js'
 export default {
   name: 'memberships',
   data(){
     return{
+      error: false,
       memberships: [],
       singleMembershipObj: {}
     }
@@ -57,6 +56,11 @@ export default {
       return response.json();
     }, error => {
       // error callback
+      if(error.status){
+        alert(`Došlo je do pogreške ${error.status}`);
+        if(error.status=='401')session.sessionDestroy();
+        this.error = true;
+      }
     }).then(data => {
       //obrada podataka
       var self = this;
@@ -85,7 +89,6 @@ export default {
           self.singleMembershipObj=x;
         }
       });
-      console.log(this.singleMembershipObj);
       this.$modal.show('singleMembership');
     }
   },

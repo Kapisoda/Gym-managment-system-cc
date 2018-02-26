@@ -38,16 +38,19 @@ export default {
         return response.json();
       }, error => {
         // error callback
-        console.log('nije prošlo');
         if(error.status){
+          alert(`error is ${error.status}`);
+          if(error.status=='401')session.sessionDestroy();
           this.error = true;
-      }
+        }
       }).then(data => {
         //obrada podataka
-        console.log('prošlo');
       });
       location.reload();
     }
+  },
+  destroyed(){
+    this.$emit('interface', true);
   }
 }
 </script>

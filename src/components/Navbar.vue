@@ -21,9 +21,7 @@ import EventBus from '../EventBus.js'
 export default {
 name: 'navbar',
   ready() {
-    console.log('Dropdown init')
     $(document).ready(function () {
-      console.log('Navbar DOM ready')
       $('.dropdown-button').dropdown({ beloworigin: true })
     })
   },

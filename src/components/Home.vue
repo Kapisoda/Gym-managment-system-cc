@@ -11,7 +11,7 @@
     <div class="row" >
       <div class="col s12">
         <h5>Kartice</h5>
-        <p><input  type="text" v-model="stringCard" autofocus/></p> <!--onblur="this.focus()"-->
+        <p><input v-if="focus" onblur="this.focus()" type="text" v-model="stringCard" autofocus/></p> <!--onblur="this.focus()"   v-on:blur="myFunctionHere()-->
       </div>
     </div>
     <div class="row" >
@@ -36,8 +36,8 @@
         </div>
       </div>
     </div>
-      <modal name="createNoteModal" :scrollable="true" :draggable="true" height="auto">
-        <appNewNote></appNewNote>
+      <modal name="createNoteModal" :scrollable="true" :draggable="true" height="auto" >
+        <appNewNote @interface="focusBlure"></appNewNote>
       </modal>
       <modal name="singleUser" :scrollable="true" :draggable="true" height="auto">
         <appSingleUser :singleUserObject="singleUserObj"></appSingleUser>
@@ -50,11 +50,13 @@
 import NavBar from './Navbar.vue'
 import NewNote from './NewNote.vue'
 import SingleUser from './SingleUser.vue'
+import session from '../Session.js'
 import moment from 'moment'
 export default {
   name: 'home',
   data(){
     return{
+      error: false,
       stringCard: '',
       usersAttendance: [],
       users: [],
@@ -68,13 +70,19 @@ export default {
       },
       singleUserObj: null,
       noUserError: false,
-      numberUnderline: 0
+      numberUnderline: 0,
+      focus: true
     }
   },
   created(){
     this.$http.get('https://gym-management-system-cc.herokuapp.com/api/v1/member_attendances/index').then(response => {
       return response.json();// success callback
-    }, error => { console.log('nije prošlo'); /*rror callback*/  }).then(data => {/*obrada podataka usersAttendance*/ console.log('DOHVAĆANJE DOLAZAKA'); console.log(data.member_attendances)
+    }, error => {
+      if(error.status){
+      alert(`Došlo je do pogreške ${error.status}`);
+      if(error.status=='401')session.sessionDestroy();
+      this.error = true;
+      } /*rror callback*/  }).then(data => {/*obrada podataka usersAttendance*/
       var self = this;
       for(let i=0; i<data.member_attendances.length; i++){
         if(i>20){break;};
@@ -102,7 +110,13 @@ export default {
     });
     this.$http.get('https://gym-management-system-cc.herokuapp.com/api/v1/notes/index').then(response => {
       return response.json();// success callback
-    }, error => { console.log('nije prošlo'); /*rror callback*/  }).then(data => {/*obrada podataka*/  this.notes = data.notes.reverse();});
+    }, error => {
+        if(error.status){
+        alert(`Došlo je do pogreške ${error.status}`);
+        if(error.status=='401')session.sessionDestroy();
+        this.error = true;
+      } /*rror callback*/
+    }).then(data => {/*obrada podataka*/  this.notes = data.notes.reverse();});
 
     this.$http.get('https://gym-management-system-cc.herokuapp.com/api/v1/users/index').then(response => {
       return response.json();// success callback
@@ -120,14 +134,17 @@ export default {
     });
   },
   methods:{
+    focusBlure(event){
+      this.focus= event;
+    },
     createNote(){
+      this.focus = false;
       this.$modal.show('createNoteModal');
     },
     deleteMessage(id){
       var por = confirm("Jeste li sigurni da želite izbrisati poruku?");
       if(por){
       this.object.note.id = id;
-      console.log(this.object.note.id);
       alert(this.object.note.id);
       this.$http.post('https://gym-management-system-cc.herokuapp.com/api/v1/notes/destroy', this.object).then(response => {
       // success callback
@@ -136,12 +153,11 @@ export default {
       }, error => {
         // error callback
         if(error.status){
-          console.log('error is: '+error.status);
+          alert(`Došlo je do pogreške ${error.status}`);
           this.error = true;
       }
       }).then(data => {
         //obrada podataka
-        console.log(data);
       });
       location.reload();
 

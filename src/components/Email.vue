@@ -29,14 +29,15 @@
 </template>
 
 <script>
-
+import session from '../Session.js'
 export default {
     name: 'email',
     props:['usersForSendingMail'],
     data(){
     return {
       subject: '',
-      message: ''
+      message: '',
+      error: false,
     }
   },
   methods:{

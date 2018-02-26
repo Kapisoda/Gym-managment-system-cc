@@ -104,6 +104,7 @@
 
 
 <script>
+import session from '../Session.js'
 import dropdown from 'vue-my-dropdown'
 import moment from 'moment'
 export default {
@@ -129,7 +130,8 @@ export default {
           membership_type_ids: [],
           group_ids: [],
           membership_starts_at: '',
-          membership_ends_at: ''
+          membership_ends_at: '',
+          membership_pause_at: ''
         }
       },
       memberships: [],
@@ -140,7 +142,8 @@ export default {
       groupOption: '',
       statusSelect: '',
       genderSelect: '',
-      errorsArray: []
+      errorsArray: [],
+      error: false
 
     }
   },
@@ -166,9 +169,17 @@ export default {
         });
         }
 
-        this.newUserObject.user.status = this.statusSelect.value;
-        this.newUserObject.user.sex = this.genderSelect.value;
-
+        if(this.statusSelect){
+          this.newUserObject.user.status = this.statusSelect.value;
+          if(this.statusSelect.value=='pause'){
+            this.object.user.membership_pause_at = moment().format('YYYY-MM-DD');
+          }else {
+            this.object.user.membership_pause_at ='';
+          }
+        }
+        if(this.genderSelect){
+          this.newUserObject.user.sex = this.genderSelect.value;
+        }
        this.$http.post('https://gym-management-system-cc.herokuapp.com/api/v1/users/create', this.newUserObject).then(response => {
           // success callback
           this.error = false;
@@ -176,12 +187,11 @@ export default {
         }, error => {
           // error callback
           if(error.status){
-            console.log('error is: '+error.status);
+            alert(`Došlo je do pogreške ${error.status}`);
             this.error = true;
         }
         }).then(data => {
           //obrada podataka
-          console.log('prošlo');
         });
         location.reload();
       }
@@ -197,7 +207,11 @@ export default {
       return response.json();
     }, error => {
       // error callback
-      console.log('Memberships nije prošlo');
+      if(error.status){
+        alert(`error is ${error.status}`);
+        if(error.status=='401')session.sessionDestroy();
+        this.error = true;
+      }
     }).then(data => {
       //obrada podataka
       this.memberships= data.membership_types;
@@ -216,6 +230,11 @@ export default {
       // success callback
       return response.json();
     }, error => {
+      if(error.status){
+        alert(`error is ${error.status}`);
+        if(error.status=='401')session.sessionDestroy();
+        this.error = true;
+      }
       // error callback
     }).then(data => {
       //obrada podataka

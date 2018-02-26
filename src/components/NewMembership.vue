@@ -28,9 +28,12 @@
 </template>
 
 <script>
+import session from '../Session.js'
+
 export default {
  data(){
    return {
+     error: false,
      object: {
        membership_type:{
          name: '',
@@ -52,12 +55,13 @@ export default {
      }, error => {
        // error callback
        if(error.status){
-         console.log('error is: '+error.status);
+         alert(`error is ${error.status}`);
+         if(error.status=='401')session.sessionDestroy();
          this.error = true;
-     }
+       }
      }).then(data => {
        //obrada podataka
-       console.log('prošlo');
+
      });
      location.reload();
    }

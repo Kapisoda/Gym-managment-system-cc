@@ -86,10 +86,10 @@
 import EventBus from '../EventBus.js'
 import Navbar from './Navbar.vue'
 import Email from './Email.vue'
-import User from './User.vue'
 import NewUser from './NewUser.vue'
 import filter from '../Filter.js'
 import SingleUser from './SingleUser.vue'
+import session from '../Session.js'
 
 
 export default {
@@ -97,6 +97,7 @@ export default {
   name: 'users',
   data() {
     return {
+      error: false,
       activeClass: '',
       ascDesc: '',
       stringForSortCheck: '',
@@ -137,7 +138,12 @@ export default {
     //dohvacanje svih usera
     this.$http.get('https://gym-management-system-cc.herokuapp.com/api/v1/users/index').then(response => {
       return response.json();// success callback
-    }, error => {  /*rror callback*/  }).then(data => {/*obrada podataka*/ this.users = data.users;});
+    }, error => {  /*rror callback*/
+      if(error.status){
+        alert(`error is ${error.status}`);
+        if(error.status=='401')session.sessionDestroy();
+        this.error = true;
+      } }).then(data => {/*obrada podataka*/ this.users = data.users;});
 
     //dohvacanje svih grupa
     this.$http.get('https://gym-management-system-cc.herokuapp.com/api/v1/groups/index').then(response => {
@@ -228,7 +234,6 @@ export default {
   components: {
     appEmail: Email,
     appNewUser: NewUser,
-    appUser: User,
     appNavbar: Navbar,
     appSingleUser: SingleUser
   }

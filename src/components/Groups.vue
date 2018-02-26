@@ -36,16 +36,15 @@
 import Navbar from './Navbar.vue'
 import NewGroup from './NewGroup.vue'
 import Group from './Group.vue'
-
+import session from '../Session.js'
 
 export default {
   name: 'groups',
   data () {
     return {
-
+      error: false,
       groups: null,
-      singleGroupObj: {},
-      test2: ''
+      singleGroupObj: {}
     }
   },
   created(){
@@ -53,8 +52,12 @@ export default {
       // success callback
       return response.json();
     }, error => {
-      // error callback
-      console.log('groups nije prošlo');
+      // error callbackif(error.status){
+        if(error.status){
+          alert(`Došlo je do pogreške ${error.status}`);
+          if(error.status=='401')session.sessionDestroy();
+          this.error = true;
+        }
     }).then(data => {
       //obrada podataka
       this.groups = data.groups;
@@ -64,9 +67,6 @@ export default {
 
   },
   methods: {
-    test(){
-      alert('je');
-    },
     createGroup(){
       this.$modal.show('createGroupModal');
     },

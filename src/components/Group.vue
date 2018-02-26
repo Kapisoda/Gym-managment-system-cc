@@ -28,7 +28,7 @@
 </template>
 
 <script>
-
+import session from '../Session.js'
 
 export default {
   name: 'group',
@@ -54,13 +54,15 @@ export default {
       this.$http.post('https://gym-management-system-cc.herokuapp.com/api/v1/groups/update', this.object).then(response => {
       // success callback
         this.error = false;
+
         return response.json();
       }, error => {
         // error callback
         if(error.status){
-
+          alert(`error is ${error.status}`);
+          if(error.status=='401')session.sessionDestroy();
           this.error = true;
-      }
+        }
       }).then(data => {
         //obrada podataka
       });
@@ -74,8 +76,10 @@ export default {
       }, error => {
         // error callback
         if(error.status){
+          alert(`error is ${error.status}`);
+          if(error.status=='401')session.sessionDestroy();
           this.error = true;
-      }
+        }
       }).then(data => {});
       location.reload();
 

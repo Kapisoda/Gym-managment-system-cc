@@ -9,10 +9,13 @@
           <p><strong>Oprez!</strong> {{errorMessage}}</p>
         </div>
       </div>
-
           <div class="alert" v-if="statusSelect != 'active'">
             <span class="closebtn"></span>
             <strong>Pozor!</strong> Korisniku je istekla članarina ili nije aktiviran.
+          </div>
+          <div class="alert" v-if="noticeMessage != ''">
+            <span class="closebtn"></span>
+            <strong>Pozor!</strong> {{noticeMessage}}
           </div>
       <div class="row">
         <div class="input-field col s6">
@@ -126,8 +129,8 @@
 </template>
 
 <script>
+import session from '../Session.js'
 import EventBus from '../EventBus.js'
-import dateTime from '../Date.js'
 import moment from 'moment'
 
 export default {
@@ -158,7 +161,8 @@ export default {
           membership_type_ids: [],
           group_ids: [],
           membership_starts_at: '',
-          membership_ends_at: ''
+          membership_ends_at: '',
+          membership_pause_at: ''
         }
       },
       disabled: true,
@@ -175,7 +179,8 @@ export default {
       genderSelect: '',
       errorUser: '',
       chosenMembership: '',
-      errorsArray: []
+      errorsArray: [],
+      noticeMessage: ''
     }
   },
   methods:{
@@ -191,12 +196,14 @@ export default {
         }, error => {
           // error callback
           if(error.status){
-            console.log('error is: '+error.status);
+            alert(`error is ${error.status}`);
+            if(error.status=='401')session.sessionDestroy();
             this.error = true;
-        }
+          }
         }).then(data => {
+          if(data.notice)this.noticeMessage = data.notice.detail;
         });
-        location.reload();
+        if(this.noticeMessage == '')location.reload();
       }else{
         alert('Prije potvrde dolaska potrebno je odabrati vrstu članarine.');
       }
@@ -218,6 +225,11 @@ export default {
       var self = this;
       if(this.statusSelect){
         this.object.user.status= this.statusSelect.value;
+        if(this.statusSelect.value=='pause'){
+          this.object.user.membership_pause_at = moment().format('YYYY-MM-DD');
+        }else {
+          this.object.user.membership_pause_at ='';
+        }
       }
       if(this.genderSelect){
         this.object.user.sex= this.genderSelect.value;
@@ -229,7 +241,6 @@ export default {
       }
       if(this.groupOption){
         this.groupOption.forEach(function(el){
-          console.log(el);
           self.object.user.group_ids.push(el.value);
         });
       }
@@ -240,9 +251,10 @@ export default {
       }, error => {
         // error callback
         if(error.status){
-          console.log('error is: '+error.status);
+          alert(`error is ${error.status}`);
+          if(error.status=='401')session.sessionDestroy();
           this.error = true;
-      }
+        }
       }).then(data => {
       });
       //this.disabled=  true;
@@ -298,11 +310,14 @@ export default {
 
       this.$http.get('https://gym-management-system-cc.herokuapp.com/api/v1/membership_types/index').then(response => {
         // success callback
-        console.log('uspjesan poziv');
         return response.json();
       }, error => {
         // error callback
-        console.log('Memberships nije prošlo');
+        if(error.status){
+          alert(`error is ${error.status}`);
+          if(error.status=='401')session.sessionDestroy();
+          this.error = true;
+        }
       }).then(data => {
         //obrada podataka
         this.memberships= data.membership_types;
@@ -344,15 +359,16 @@ export default {
 
 
 <style scoped>
-.danger {
-    background-color: #ffdddd;
-    border-left: 6px solid #f44336;
-}
+
 input[type="Date"]:disabled {
     color: black;
 }
 input[type="text"]:disabled {
     color: black;
+}
+.danger {
+    background-color: #ffdddd;
+    border-left: 6px solid #f44336;
 }
 .alert {
     padding: 20px;
