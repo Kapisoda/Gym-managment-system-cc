@@ -5,7 +5,6 @@ var filterUsers = {
 
   foo(users, filterArray, string, search, ascDesc, membership_id, group_id, gender) {
     let result = users;
-    console.log(users[0]);
     result = users.filter(function(user) {
       let fullname = user.first_name + ' ' + user.last_name;
       if(filterArray){
