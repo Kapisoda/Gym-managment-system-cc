@@ -1,5 +1,7 @@
 <template>
   <form>
+    <loader v-if="loading.groups || loading.membership"></loader>
+    <template v-else>
    <div class="col s12" ><!--:test=test -->
       <div class= "row">
         <center>
@@ -99,6 +101,7 @@
       </div>
 
     </div>
+  </template>
 </form>
 </template>
 
@@ -107,6 +110,7 @@
 import session from '../Session.js'
 import dropdown from 'vue-my-dropdown'
 import moment from 'moment'
+import Loader from './Loader.vue'
 export default {
   name: 'newUser',
   data(){
@@ -143,13 +147,18 @@ export default {
       statusSelect: '',
       genderSelect: '',
       errorsArray: [],
-      error: false
+      error: false,
+      loading: {
+        membership: false,
+        groups: false
+      }
 
     }
   },
   methods:{
     createNewUser(){
       this.errorsArray=[];
+      console.log('1');
       if(!this.newUserObject.user.first_name) this.errorsArray.push("Potrebo je upisati ime korisnika.");
       if(!this.newUserObject.user.last_name) this.errorsArray.push("Potrebo je upisati prezime korisnika.");
       if(!this.newUserObject.user.code) this.errorsArray.push("Potrebo je zapisati korisnikovu karticu.");
@@ -158,6 +167,7 @@ export default {
       if(!this.groupOption || this.groupOption.length == 0) this.errorsArray.push("Potrebo je odabrati grupu korisnika.");
       if(this.errorsArray.length == 0){
         var self = this;
+        console.log('2');
         if(this.membershipOption){
         this.membershipOption.forEach(function(el){
           self.newUserObject.user.membership_type_ids.push(el.value);
@@ -168,18 +178,23 @@ export default {
           self.newUserObject.user.group_ids.push(el.value);
         });
         }
-
+        console.log('3');
         if(this.statusSelect){
+          console.log('3.1');
           this.newUserObject.user.status = this.statusSelect.value;
+          console.log('3.2');
+
           if(this.statusSelect.value=='pause'){
-            this.object.user.membership_pause_at = moment().format('YYYY-MM-DD');
+            this.newUserObject.user.membership_pause_at = moment().format('YYYY-MM-DD');
           }else {
-            this.object.user.membership_pause_at ='';
+            this.newUserObject.user.membership_pause_at ='';
           }
+          console.log('3.3');
         }
         if(this.genderSelect){
           this.newUserObject.user.sex = this.genderSelect.value;
         }
+        console.log('4');
        this.$http.post('https://gym-management-system-cc.herokuapp.com/api/v1/users/create', this.newUserObject).then(response => {
           // success callback
           this.error = false;
@@ -191,6 +206,7 @@ export default {
             this.error = true;
         }
         }).then(data => {
+          if(data.status=='401')session.sessionDestroy();
           //obrada podataka
         });
         location.reload();
@@ -198,21 +214,24 @@ export default {
     }
   },
   components: {
+    Loader,
     dropdown: dropdown
   },
   created(){
+      this.loading.membership = true;
+      this.loading.groups = true;
     this.$http.get('https://gym-management-system-cc.herokuapp.com/api/v1/membership_types/index').then(response => {
       // success callback
-      console.log('uspjesan poziv');
+      this.loading.membership = false;
       return response.json();
     }, error => {
       // error callback
       if(error.status){
         console.log(`error is ${error.status}`);
-        if(error.status=='401')session.sessionDestroy();
         this.error = true;
       }
     }).then(data => {
+      if(data.status=='401')session.sessionDestroy();
       //obrada podataka
       this.memberships= data.membership_types;
       var self = this;
@@ -228,16 +247,17 @@ export default {
 
     this.$http.get('https://gym-management-system-cc.herokuapp.com/api/v1/groups/index').then(response => {
       // success callback
+      this.loading.groups = false;
       return response.json();
     }, error => {
       if(error.status){
         console.log(`error is ${error.status}`);
-        if(error.status=='401')session.sessionDestroy();
         this.error = true;
       }
       // error callback
     }).then(data => {
       //obrada podataka
+      if(data.status=='401')session.sessionDestroy();
       this.groups = data.groups;
       var self = this;
       data.groups.map(x => {

@@ -1,5 +1,7 @@
 <template>
-
+<div>
+  <loader v-if="loading.user || loading.groups ||loading.membership"></loader>
+  <template v-else>
   <div class="row">
     <form class="col s12">
       <h3 class="title">Korisnik</h3>
@@ -123,12 +125,14 @@
       <div class="input-field col s6">
         <button class="buttonClass waves-effect waves-light btn" v-on:click="addOneMonth" >Produži članarinu</button>
       </div>
+    </div>
   </div>
-  </div>
-  </div>
+  </template>
+</div>
 </template>
 
 <script>
+import Loader from './Loader.vue'
 import session from '../Session.js'
 import EventBus from '../EventBus.js'
 import moment from 'moment'
@@ -180,12 +184,18 @@ export default {
       errorUser: '',
       chosenMembership: '',
       errorsArray: [],
-      noticeMessage: ''
+      noticeMessage: '',
+      loading: {
+        user: false,
+        membership: false,
+        groups: false
+      }
     }
   },
   methods:{
     confirmArrival(){
       //chosenMembership
+      this.noticeMessage = '';
       if(this.chosenMembership && this.object.user.code){
         this.attendanceObject.member_attendance.code = this.object.user.code;
         this.attendanceObject.member_attendance.membership_id = this.chosenMembership.value;
@@ -197,13 +207,16 @@ export default {
           // error callback
           if(error.status){
             console.log(`error is ${error.status}`);
-            if(error.status=='401')session.sessionDestroy();
             this.error = true;
           }
         }).then(data => {
+          if(data.status=='401')session.sessionDestroy();
+          console.log(data.notice);
           if(data.notice)this.noticeMessage = data.notice.detail;
+          console.log(this.noticeMessage);
+          if(this.noticeMessage == '')location.reload();
         });
-        if(this.noticeMessage == '')location.reload();
+
       }else{
         alert('Prije potvrde dolaska potrebno je odabrati vrstu članarine.');
       }
@@ -252,10 +265,9 @@ export default {
         // error callback
         if(error.status){
           console.log(`error is ${error.status}`);
-          if(error.status=='401')session.sessionDestroy();
           this.error = true;
         }
-      }).then(data => {
+      }).then(data => { if(data.status=='401')session.sessionDestroy();
       });
       //this.disabled=  true;
       location.reload();
@@ -272,6 +284,10 @@ export default {
           }
         });
         */
+      this.loading.user = true;
+      this.loading.membership = true;
+      this.loading.groups = true;
+
       this.object.user.id = this.singleUserObject.id;
       this.object.user.first_name = this.singleUserObject.first_name;
       this.object.user.last_name = this.singleUserObject.last_name;
@@ -306,10 +322,11 @@ export default {
       if(this.membershipsActive.length==1){
         this.chosenMembership=this.membershipsActive[0];
       }
-
+      this.loading.user = false;
 
       this.$http.get('https://gym-management-system-cc.herokuapp.com/api/v1/membership_types/index').then(response => {
         // success callback
+        this.loading.membership = false;
         return response.json();
       }, error => {
         // error callback
@@ -332,6 +349,7 @@ export default {
       });
       this.$http.get('https://gym-management-system-cc.herokuapp.com/api/v1/groups/index').then(response => {
         // success callback
+        this.loading.groups = false;
         return response.json();
       }, error => {
         // error callback
@@ -352,6 +370,9 @@ export default {
   destroyed(){
     //window.removeEventListener('keyup', this.confirmArrival);
 
+  },
+  components:{
+    Loader
   }
 
 }

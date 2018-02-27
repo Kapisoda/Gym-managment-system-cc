@@ -1,7 +1,7 @@
 <template>
   <div class="users">
     <appNavbar></appNavbar>
-    <loader v-if="loading.users || loading.groups ||loading.users"></loader>
+    <loader v-if="loading.users || loading.groups ||loading.membership"></loader>
     <template v-else>
       <div class="row">
         <div class="col s3">
@@ -166,10 +166,10 @@
       }, error => { /*rror callback*/
         if (error.status) {
           console.log(`error is ${error.status}`);
-          if (error.status == '401') session.sessionDestroy();
           this.error = true;
         }
       }).then(data => { /*obrada podataka*/
+        if (data.status == '401') session.sessionDestroy();
         this.users = data.users;
       });
 
@@ -177,7 +177,13 @@
       this.$http.get('https://gym-management-system-cc.herokuapp.com/api/v1/groups/index').then(response => {
         this.loading.groups = false
         return response.json(); // success callback
-      }, error => { /* error callback*/ }).then(data => { /*obrada podataka*/
+      }, error => { /* error callback*/
+        if (error.status) {
+          console.log(`error is ${error.status}`);
+          this.error = true;
+        }
+      }).then(data => { /*obrada podataka*/
+        if (data.status == '401') session.sessionDestroy();
         var self = this;
         data.groups.map(x => {
           let obj = {
@@ -193,8 +199,16 @@
         // success callback
         this.loading.membership = false
         return response.json();
-      }, error => { /* error callback */ }).then(data => {
+      }, error => { /* error callback */
+        if (error.status) {
+          console.log(`error is ${error.status}`);
+          this.error = true;
+        }
+
+       }).then(data => {
         /*obrada podataka*/
+        if (data.status == '401') session.sessionDestroy();
+
         this.memberships = data.membership_types;
         data.membership_types.map(x => {
           let obj = {
@@ -279,8 +293,8 @@
 <style>
   .button-floater {
     position: fixed;
-    bottom: 1em;
-    right: 1em;
+    bottom: 2em;
+    right: 2em;
   }
 
   .headerIcons {

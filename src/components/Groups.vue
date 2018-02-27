@@ -30,7 +30,7 @@
     <modal name="seeGroupModal" :scrollable="true" :draggable="true" height="auto">
       <appGroup :singleGroupObject="singleGroupObj"></appGroup>
     </modal>
-  
+
   </template>
   </div>
 </template>
@@ -66,10 +66,10 @@ export default {
       // error callbackif(error.status){
         if(error.status){
           console.log(`Došlo je do pogreške ${error.status}`);
-          if(error.status=='401')session.sessionDestroy();
           this.error = true;
         }
     }).then(data => {
+      if(data.status=='401')session.sessionDestroy();
       //obrada podataka
       this.groups = data.groups;
 

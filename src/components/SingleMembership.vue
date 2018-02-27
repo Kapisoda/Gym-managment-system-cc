@@ -70,10 +70,10 @@ export default {
         // error callback
         if(error.status){
           console.log(`error is ${error.status}`);
-          if(error.status=='401')session.sessionDestroy();
           this.error = true;
         }
       }).then(data => {
+        if(data.status=='401')session.sessionDestroy();
         //obrada podataka
         this.object.membership_type = data.membership_type
       });
@@ -88,12 +88,11 @@ export default {
         // error callback
         if(error.status){
           console.log(`error is ${error.status}`);
-          if(error.status=='401')session.sessionDestroy();
           this.error = true;
         }
       }).then(data => {
         //obrada podataka
-
+        if(data.status=='401')session.sessionDestroy();
       });
       location.reload();
     }

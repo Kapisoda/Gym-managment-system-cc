@@ -67,6 +67,7 @@ export default {
           this.error = true;
       }
       }).then(data => {
+        if(data.status=='401')session.sessionDestroy();
         //obrada podataka
         if (!this.error){
           res.id=data.admin.id;

@@ -67,10 +67,10 @@ export default {
       // error callback
       if(error.status){
         console.log(`Došlo je do pogreške ${error.status}`);
-        if(error.status=='401')session.sessionDestroy();
         this.error = true;
       }
     }).then(data => {
+      if(data.status=='401')session.sessionDestroy();
       //obrada podataka
       var self = this;
       //this.memberships= data.membership_types;

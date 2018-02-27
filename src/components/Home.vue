@@ -13,7 +13,7 @@
     <div class="row" >
       <div class="col s12">
         <h5>Kartice</h5>
-        <p><input v-if="focus" onblur="this.focus()" type="text" v-model="stringCard" autofocus/></p> <!--onblur="this.focus()"   v-on:blur="myFunctionHere()-->
+        <p><input v-if="focus" type="text" v-model="stringCard" autofocus/></p> <!--onblur="this.focus()"  v-on:blur="myFunctionHere()-->
       </div>
     </div>
     <div class="row" >
@@ -95,9 +95,9 @@ export default {
     }, error => {
       if(error.status){
       console.log(`Došlo je do pogreške ${error.status}`);
-      if(error.status=='401')session.sessionDestroy();
       this.error = true;
       } /*rror callback*/  }).then(data => {/*obrada podataka usersAttendance*/
+        if(data.status=='401')session.sessionDestroy();
       var self = this;
       for(let i=0; i<data.member_attendances.length; i++){
         if(i>20){break;};
@@ -130,15 +130,22 @@ export default {
     }, error => {
         if(error.status){
         console.log(`Došlo je do pogreške ${error.status}`);
-        if(error.status=='401')session.sessionDestroy();
         this.error = true;
       } /*rror callback*/
-    }).then(data => {/*obrada podataka*/  this.notes = data.notes.reverse();});
+    }).then(data => {/*obrada podataka*/
+      if(data.status=='401')session.sessionDestroy();
+      this.notes = data.notes.reverse();});
 
     this.$http.get('https://gym-management-system-cc.herokuapp.com/api/v1/users/index').then(response => {
       this.loading.users = false;
       return response.json();// success callback
-    }, error => {  /*rror callback*/  }).then(data => {/*obrada podataka*/
+    }, error => {  /*rror callback*/
+      if(error.status){
+      console.log(`Došlo je do pogreške ${error.status}`);
+      this.error = true;
+    }
+  }).then(data => {/*obrada podataka*/
+      if(data.status=='401')session.sessionDestroy();
       this.users = data.users;
       var brojAktivnih = 0;
       var brojNeaktivnih = 0;
@@ -174,6 +181,7 @@ export default {
           this.error = true;
       }
       }).then(data => {
+        if(data.status=='401')session.sessionDestroy();
         //obrada podataka
       });
       location.reload();
@@ -251,8 +259,8 @@ h5{
 
 .button-floater{
   position: fixed;
-    bottom: 1em;
-    left: 1em;
+    bottom: 2em;
+    left: 2em;
 }
 .btn-small {
     height: 24px;

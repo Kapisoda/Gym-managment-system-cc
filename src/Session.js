@@ -21,7 +21,8 @@ var SessionService = {
     return sessionJar.$session.exists() ? true : false
   },
   sessionDestroy(){
-    sessionJar.$session.destroy()
+    sessionJar.$session.destroy();
+    location.reload();
   }
 }
 
