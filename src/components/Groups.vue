@@ -9,8 +9,6 @@
         <center>
             <button type="button" class="btn waves-effect waves-light teal" name="action" v-on:click="createGroup">Kreiraj novu grupu</button>
         </center>
-
-
       </div>
       <div class="col s9">
         <table id="customers">

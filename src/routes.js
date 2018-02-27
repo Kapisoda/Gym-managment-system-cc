@@ -14,7 +14,9 @@ import Home from './components/Home.vue'
 
 Vue.use(Router)
 
-let router = new Router({ routes : [
+let router = new Router({
+  mode: 'history',
+  routes : [
   { path: '/login',
     name: 'login',
     components: {default: Login}
@@ -59,8 +61,7 @@ let router = new Router({ routes : [
   /*{
     path: '*',
     redirect: {name: 'group'}}*/
-  ],
-  mode: 'history'
+  ]
 });
 
 router.beforeEach((to, from, next) => {
