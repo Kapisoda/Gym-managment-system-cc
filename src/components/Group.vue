@@ -66,8 +66,9 @@ export default {
 
         if(data.status=='401')session.sessionDestroy();
         //obrada podataka
+        location.reload();
       });
-      location.reload();
+
     },
     deleteGroup(){
       this.$http.post('https://gym-management-system-cc.herokuapp.com/api/v1/groups/destroy', this.object).then(response => {
@@ -81,8 +82,8 @@ export default {
           if(error.status=='401')session.sessionDestroy();
           this.error = true;
         }
-      }).then(data => {});
-      location.reload();
+      }).then(data => {location.reload();});
+
 
     }
   }

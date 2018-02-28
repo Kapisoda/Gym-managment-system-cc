@@ -268,9 +268,10 @@ export default {
           this.error = true;
         }
       }).then(data => { if(data.status=='401')session.sessionDestroy();
+      location.reload();
       });
       //this.disabled=  true;
-      location.reload();
+
       }
     }
   },

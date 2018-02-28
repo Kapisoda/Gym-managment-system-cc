@@ -76,8 +76,9 @@ export default {
         if(data.status=='401')session.sessionDestroy();
         //obrada podataka
         this.object.membership_type = data.membership_type
+        location.reload();
       });
-      location.reload();
+
     },
     deleteMembership(){
       this.$http.post('https://gym-management-system-cc.herokuapp.com/api/v1/membership_types/destroy', this.object).then(response => {

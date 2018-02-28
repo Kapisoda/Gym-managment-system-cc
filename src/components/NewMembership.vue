@@ -61,9 +61,9 @@ export default {
      }).then(data => {
        if(data.status=='401')session.sessionDestroy();
        //obrada podataka
-
+       location.reload();
      });
-     location.reload();
+
    }
  }
 }
