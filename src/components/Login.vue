@@ -7,6 +7,13 @@
           <center>
             <h3 class="teal-text">PRIJAVA</h3>
           </center>
+          <div class="row" v-if="errorLogin != ''">
+            <div class="col s12">
+              <div class="error-login">
+                  <p><strong>Oprez!</strong> {{errorLogin}}</p>
+              </div>
+            </div>
+          </div>
           <div class="row">
             <div class="input-field col s12">
               <input id="username" type="text" class="validate" v-model="object.admin.username">
@@ -50,7 +57,8 @@ export default {
         password: ""
       }},
       error: false,
-      isActive: true
+      isActive: true,
+      errorLogin: ''
     }
   },
   methods: {
@@ -69,7 +77,9 @@ export default {
       }).then(data => {
         if(data.status=='401')session.sessionDestroy();
         //obrada podataka
-        if (!this.error){
+        if(data.notice){
+          this.errorLogin = data.notice.detail;
+        }else{ //if (!this.error)
           res.id=data.admin.id;
           res.username=data.admin.username;
           res.email=data.admin.email;
@@ -85,6 +95,7 @@ export default {
   }
 </script>
 
-<style scoped>
+<style lang="css" scoped>
 @import '../assets/login.scss'
+
 </style>
