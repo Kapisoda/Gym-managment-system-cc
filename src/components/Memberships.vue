@@ -14,7 +14,7 @@
       <table id="customers">
       <tr>
         <th>Naziv članarine</th>
-        <th>Tjedni broj dolazaka</th>
+        <th>Broj dolazaka</th>
         <th>Sati restrikcija</th>
       </tr>
       <tr class="list-group-item" style="cursor: pointer;" v-for="membership in memberships"  :key="membership.id">

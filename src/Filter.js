@@ -6,7 +6,7 @@ var filterUsers = {
   foo(users, filterArray, string, search, ascDesc, membership_id, group_id, gender) {
     let result = users;
     result = users.filter(function(user) {
-      let fullname = user.first_name + ' ' + user.last_name;
+      let fullname = user.first_name + ' ' + user.last_name + ' ' + user.code;
       if(filterArray){
         return fullname.toLowerCase().indexOf(search.toLowerCase()) >= 0 && user.status == filterArray.value;
       }else {

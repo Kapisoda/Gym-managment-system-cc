@@ -199,24 +199,25 @@ export default {
   },
   watch:{
     stringCard(){ //_.includes(this.stringCard, '_')
-      var tempError = 0;
+      var tempError = [];
       var self = this;
       this.numberUnderline = this.stringCard.split("_").length - 1
       if(this.numberUnderline==2){
         this.users.forEach(function(x) {
           if(x.code==self.stringCard){
+            //console.log(x);
             self.singleUserObj=x;
             self.stringCard = '';
-            tempError = -1;
+            tempError[0] = -1;
             self.numberUnderline = 0;
-          }else {
-            tempError = 1;
+          }else{
+            tempError.push(1);
           }
         });
-        if(tempError==-1){
+        if(tempError[0]==-1){
           this.noUserError = false;
           this.$modal.show('singleUser');
-        }else if (tempError==1) {
+        }else if (tempError[0]==1) {
           this.noUserError = true;
           this.numberUnderline = 0;
           this.stringCard='';
