@@ -46,8 +46,8 @@ export default {
     return {
       object: {
       admin : {
-        username: "adminko",
-        password: "asdfasdf"
+        username: "",
+        password: ""
       }},
       error: false,
       isActive: true
