@@ -94,8 +94,9 @@ export default {
       }).then(data => {
         //obrada podataka
         if(data.status=='401')session.sessionDestroy();
+        location.reload();
       });
-      location.reload();
+
     }
   },
   created() {
