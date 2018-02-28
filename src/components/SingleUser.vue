@@ -194,7 +194,14 @@ export default {
   },
   methods:{
     confirmArrival(){
-      //chosenMembership
+      //chosenMembershipthis.errorsArray=[];
+      if(!this.object.user.first_name) this.errorsArray.push("Potrebo je upisati ime korisnika.");
+      if(!this.object.user.last_name) this.errorsArray.push("Potrebo je upisati prezime korisnika.");
+      if(!this.object.user.code) this.errorsArray.push("Potrebo je zapisati korisnikovu karticu.");
+      if(!this.statusSelect) this.errorsArray.push("Potrebo je odabrati aktivnost korisnika.");
+      if(!this.membershipOption || this.membershipOption.length == 0) this.errorsArray.push("Potrebo je odabrati članarinu korisnika.");
+      if(!this.groupOption || this.groupOption.length == 0) this.errorsArray.push("Potrebo je odabrati grupu korisnika.");
+      if(this.errorsArray.length == 0){
       this.noticeMessage = '';
       if(this.chosenMembership && this.object.user.code){
         this.attendanceObject.member_attendance.code = this.object.user.code;
@@ -211,16 +218,14 @@ export default {
           }
         }).then(data => {
           if(data.status=='401')session.sessionDestroy();
-          console.log(data.notice);
           if(data.notice)this.noticeMessage = data.notice.detail;
-          console.log(this.noticeMessage);
           if(this.noticeMessage == '')location.reload();
         });
 
       }else{
         alert('Prije potvrde dolaska potrebno je odabrati vrstu članarine.');
       }
-
+    }
     },
     addOneMonth(){
       this.object.user.membership_starts_at = moment(this.object.user.membership_starts_at).add(1, 'M').format('YYYY-MM-DD');

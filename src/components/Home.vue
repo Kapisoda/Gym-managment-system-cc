@@ -99,8 +99,9 @@ export default {
       } /*rror callback*/  }).then(data => {/*obrada podataka usersAttendance*/
         if(data.status=='401')session.sessionDestroy();
       var self = this;
+      data.member_attendances.reverse();
       for(let i=0; i<data.member_attendances.length; i++){
-        if(i>20){break;};
+        if(i>19){break;};
         let obj={
           first_name: data.member_attendances[i].user.first_name,
           last_name: data.member_attendances[i].user.last_name,
@@ -108,8 +109,7 @@ export default {
         }
         self.usersAttendance.push(obj);
       };
-      if(self.usersAttendance)
-        self.usersAttendance = self.usersAttendance.reverse();
+
 
   });
 
