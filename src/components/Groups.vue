@@ -20,7 +20,6 @@
         </tr>
       </table>
       </div>
-
     </div>
     <modal name="createGroupModal" :scrollable="true" :draggable="true" height="auto">
       <appNewGroup></appNewGroup>

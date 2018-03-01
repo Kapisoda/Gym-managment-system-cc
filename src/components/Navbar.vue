@@ -1,7 +1,6 @@
 <template >
   <nav>
     <div class="nav-change nav-wrapper">
-
       <ul class="left hide-on-med-and-down">
         <li><router-link to="home">Home</router-link></li>
         <li><router-link to="users">Korisnici</router-link></li>

@@ -208,7 +208,6 @@
        }).then(data => {
         /*obrada podataka*/
         if (data.status == '401') session.sessionDestroy();
-
         this.memberships = data.membership_types;
         data.membership_types.map(x => {
           let obj = {
@@ -226,7 +225,6 @@
         } else {
           this.$modal.show('email');
         }
-
       },
       activeClassFunction() {
         if (this.stringForSortCheck != this.stringForSort) {

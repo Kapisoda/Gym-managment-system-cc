@@ -23,7 +23,7 @@
             <i class="large material-icons">mode_edit</i>
         </a>
         <div class="info" v-for="note in notes" >
-          <p><strong>{{note.author}}: </strong> {{note.body}}<button class="btn-small right  btn waves-effect waves-light red"  v-on:click="deleteMessage(note.id)">X</button></p>
+          <p><strong>{{note.author}}: </strong> {{note.body}} <i class="fa fa-close right" style="color:red; cursor: pointer" v-on:click="deleteMessage(note.id)"></i></p>
         </div>
       </div>
       <div class="col s4">
@@ -265,9 +265,9 @@ h5{
     left: 2em;
 }
 .btn-small {
-    height: 24px;
-    line-height: 24px;
-    padding: 0 0.5rem;
+    height: 15px;
+    line-height: 15px;
+    padding: 0 0.2rem;
 }
 .info {
     background-color: #e7f3fe;
