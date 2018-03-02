@@ -350,7 +350,7 @@ export default {
       this.object.user.membership_starts_at = this.singleUserObject.membership_starts_at;
       this.object.user.membership_ends_at = this.singleUserObject.membership_ends_at;
       this.object.user.phone_number = this.singleUserObject.phone_number;
-      this.time = moment(this.object.user.membership_ends_at).lang("hr").format('L');
+      this.time = moment(this.object.user.membership_ends_at).locale("hr").format('L');
       var self = this;
       this.singleUserObject.membership_types.forEach(function(el){
         let obj = {
