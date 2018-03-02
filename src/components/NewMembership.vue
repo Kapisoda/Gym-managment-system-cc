@@ -48,8 +48,6 @@ export default {
      this.object.membership_type.after_hour_restriction=moment(this.object.membership_type.after_hour_restriction).format(',HH:MM');
    },
    createNewMembership(){
-     console.log(this.object.membership_type.after_hour_restriction);
-     console.log('tu');
      if(this.object.membership_type.after_hour_restriction == ''){
        let timeStr = "23:59";
        this.object.membership_type.after_hour_restriction = moment(timeStr, 'HH:mm');

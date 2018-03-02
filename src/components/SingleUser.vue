@@ -4,21 +4,70 @@
   <template v-else>
   <div class="row">
     <form class="col s12">
-      <h3 class="title">Korisnik</h3>
-
       <div class="row" v-if="errorsArray">
         <div class="danger" v-for="errorMessage in errorsArray">
           <p><strong>Oprez!</strong> {{errorMessage}}</p>
         </div>
       </div>
-          <div class="alert" v-if="statusSelect != 'active'">
+          <div class="alert" v-if="statusSelect == 'inactive'">
             <span class="closebtn"></span>
-            <strong>Pozor!</strong> Korisniku je istekla članarina ili nije aktiviran.
+            <strong>Pozor!</strong> Korisniku je istekla članarina ili je neaktivan.
+          </div>
+          <div class="warning" v-if="statusSelect == 'pause'">
+            <span class="closebtn"></span>
+            <strong></strong> Korisniku je članarina pauzirana, za nastavak članarine potvrdite dolazak.
           </div>
           <div class="alert" v-if="noticeMessage != ''">
             <span class="closebtn"></span>
             <strong>Pozor!</strong> {{noticeMessage}}
           </div>
+      <div v-if="disabled">
+        <div class="row">
+          <div class="input-field col s12">
+            <center>
+                <h3>{{object.user.first_name}} {{object.user.last_name}}</h3>
+            </center>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s3">
+          </div>
+          <div class="input-field col s6">
+            <center>
+              <label class="active" for="groupsActive">Grupe:</label>
+              <input :disabled="disabled" id="groupsActive" type="text" class="validate" v-model="stringOfGroups">
+            </center>
+          </div>
+          <div class="input-field col s3">
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s3">
+          </div>
+          <div class="input-field col s6">
+            <center>
+              <label class="active" for="membershipsActive">Članarine:</label>
+              <input :disabled="disabled" id="membershipsActive" type="text" class="validate" v-model="stringOfMemberships">
+            </center>
+          </div>
+          <div class="input-field col s3">
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s3">
+          </div>
+          <div class="input-field col s6">
+            <center>
+              <label class="active" for="membership_ends_at">Vrijedi do:</label>
+              <input :disabled="disabled"  id="membership_ends_at" type="date" class="validate" v-model="object.user.membership_ends_at">
+            </center>
+          </div>
+          <div class="input-field col s3">
+          </div>
+        </div>
+      </div>
+      <div v-else>
+        <h3 class="title">Korisnik</h3>
       <div class="row">
         <div class="input-field col s6">
           <input :disabled="disabled" id="first_name" type="text" class="validate" v-model="object.user.first_name">
@@ -29,7 +78,7 @@
           <label class="active" for="last_name">Prezime:</label>
         </div>
       </div>
-      <div v-if="!disabled">
+
       <div class="row">
         <div class="input-field col s6">
           <input :disabled="disabled" id="Address" type="text" class="validate" v-model="object.user.address">
@@ -73,7 +122,7 @@
           <v-select :disabled="disabled" v-model="genderSelect" :options="[{ label: 'M', value: 'm'},{ label: 'Ž', value: 'ž'}]"></v-select>
         </div>
       </div>
-      </div>
+
       <div class="row">
         <div class="input-field col s12">
            <label class="active" for="Memberships">Članarine</label>
@@ -98,16 +147,19 @@
           <label class="active" for="to">Trajanje članarine do:</label>
         </div>
       </div>
+      </div>
 
     </form>
     <div class="row" v-if="disabled">
-      <div class="input-field col s6">
+      <div class="input-field col s3">
 
       </div>
       <div class="input-field col s6">
-          <label class="active" for="chosenMembership">Izaberite članarinu za potvrdu dolaska</label>
-          <br />
-          <v-select  v-model="chosenMembership" :options="membershipOption"></v-select>
+            <label class="active" for="chosenMembership">Izaberite članarinu za potvrdu dolaska</label>
+            <br />
+            <v-select  v-model="chosenMembership" :options="membershipOption"></v-select>
+      </div>
+      <div class="input-field col s3">
       </div>
       </div>
     <div class="row" v-if="disabled">
@@ -185,11 +237,14 @@ export default {
       chosenMembership: '',
       errorsArray: [],
       noticeMessage: '',
+      stringOfMemberships: '',
+      stringOfGroups: '',
       loading: {
         user: false,
         membership: false,
         groups: false
-      }
+      },
+      flagToChangeUser: false
     }
   },
   methods:{
@@ -199,6 +254,11 @@ export default {
       if(!this.object.user.last_name) this.errorsArray.push("Potrebo je upisati prezime korisnika.");
       if(!this.object.user.code) this.errorsArray.push("Potrebo je zapisati korisnikovu karticu.");
       if(!this.statusSelect) this.errorsArray.push("Potrebo je odabrati aktivnost korisnika.");
+      if(this.statusSelect == 'pause'){
+        this.object.user.status = 'active';
+        this.flagToChangeUser = true;
+        this.changeUser();
+        }
       if(!this.membershipOption || this.membershipOption.length == 0) this.errorsArray.push("Potrebo je odabrati članarinu korisnika.");
       if(!this.groupOption || this.groupOption.length == 0) this.errorsArray.push("Potrebo je odabrati grupu korisnika.");
       if(this.errorsArray.length == 0){
@@ -241,12 +301,15 @@ export default {
       if(!this.groupOption || this.groupOption.length == 0) this.errorsArray.push("Potrebo je odabrati grupu korisnika.");
       if(this.errorsArray.length == 0){
       var self = this;
-      if(this.statusSelect){
-        this.object.user.status= this.statusSelect.value;
-        if(this.statusSelect.value=='pause'){
-          this.object.user.membership_pause_at = moment().format('YYYY-MM-DD');
-        }else {
-          this.object.user.membership_pause_at ='';
+      
+      if(!this.flagToChangeUser){
+        if(this.statusSelect){
+          this.object.user.status= this.statusSelect.value;
+          if(this.statusSelect.value=='pause'){
+            this.object.user.membership_pause_at = moment().format('YYYY-MM-DD');
+          }else {
+            this.object.user.membership_pause_at ='';
+          }
         }
       }
       if(this.genderSelect){
@@ -273,7 +336,9 @@ export default {
           this.error = true;
         }
       }).then(data => { if(data.status=='401')session.sessionDestroy();
+      if(!this.flagToChangeUser){
       location.reload();
+      }
       });
       //this.disabled=  true;
 
@@ -314,6 +379,11 @@ export default {
         let obj = {
           label: el.name,
           value: el.id }
+          if(self.stringOfMemberships){
+            self.stringOfMemberships +=', '+ el.name
+          }else{
+          self.stringOfMemberships += el.name;
+          }
           self.membershipsActive.push(obj);
           self.membershipOption = self.membershipsActive;
       });
@@ -321,6 +391,11 @@ export default {
         let obj = {
           label: el.name,
           value: el.id }
+          if(self.stringOfGroups){
+            self.stringOfGroups +=', '+ el.name
+          }else{
+          self.stringOfGroups += el.name;
+          }
           self.groupsActive.push(obj);
           self.groupOption = self.groupsActive;
       });
@@ -396,6 +471,13 @@ input[type="text"]:disabled {
 .danger {
     background-color: #ffdddd;
     border-left: 6px solid #f44336;
+}
+.warning {
+    padding: 20px;
+    background-color: #ff9800; /* yellow */
+    color: white;
+    margin-bottom: 15px;
+    border-radius: 5px;
 }
 .alert {
     padding: 20px;
