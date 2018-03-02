@@ -30,40 +30,17 @@
           </div>
         </div>
         <div class="row">
-          <div class="input-field col s3">
-          </div>
-          <div class="input-field col s6">
-            <center>
-              <label class="active" for="groupsActive">Grupe:</label>
-              <input :disabled="disabled" id="groupsActive" type="text" class="validate" v-model="stringOfGroups">
-            </center>
-          </div>
-          <div class="input-field col s3">
-          </div>
+
+              <p style="text-align: center"><b style="color: gray;">Grupe: {{stringOfGroups}}</b></p>
+
         </div>
         <div class="row">
-          <div class="input-field col s3">
-          </div>
-          <div class="input-field col s6">
-            <center>
-              <label class="active" for="membershipsActive">Članarine:</label>
-              <input :disabled="disabled" id="membershipsActive" type="text" class="validate" v-model="stringOfMemberships">
-            </center>
-          </div>
-          <div class="input-field col s3">
-          </div>
+            <p style="text-align: center"><b style="color: gray;">Članarine: </b></p>
+            <h4 style="text-align: center"><b>{{stringOfGroups}}</b></h4>
         </div>
         <div class="row">
-          <div class="input-field col s3">
-          </div>
-          <div class="input-field col s6">
-            <center>
-              <label class="active" for="membership_ends_at">Vrijedi do:</label>
-              <input :disabled="disabled"  id="membership_ends_at" type="date" class="validate" v-model="object.user.membership_ends_at">
-            </center>
-          </div>
-          <div class="input-field col s3">
-          </div>
+          <p style="text-align: center"><b style="color: gray;">Članarina vrijedi do: </b></p>
+          <h4 style="text-align: center"><b>{{time}}</b></h4>
         </div>
       </div>
       <div v-else>
@@ -164,7 +141,7 @@
       </div>
     <div class="row" v-if="disabled">
       <div class="input-field col s6">
-        <button v-on:click="disabled = !disabled" class="buttonClass waves-effect waves-light btn">Promjeni informacije</button>
+        <button v-on:click="disabled = !disabled; changeHandler()" class="buttonClass waves-effect waves-light btn">Promjeni informacije</button>
       </div>
       <div class="input-field col s6">
           <button v-on:click="confirmArrival"  class="buttonClass waves-effect waves-light btn">Potvrdi dolazak</button>
@@ -244,10 +221,19 @@ export default {
         membership: false,
         groups: false
       },
-      flagToChangeUser: false
+      flagToChangeUser: false,
+      time: ''
     }
   },
   methods:{
+    changeHandler(){
+      var vm = this;
+      window.removeEventListener('keyup', function(event) {
+        if (event.keyCode == 13) {
+          vm.confirmArrival();
+        }
+      });
+    },
     confirmArrival(){
       //chosenMembershipthis.errorsArray=[];
       if(!this.object.user.first_name) this.errorsArray.push("Potrebo je upisati ime korisnika.");
@@ -301,7 +287,7 @@ export default {
       if(!this.groupOption || this.groupOption.length == 0) this.errorsArray.push("Potrebo je odabrati grupu korisnika.");
       if(this.errorsArray.length == 0){
       var self = this;
-      
+
       if(!this.flagToChangeUser){
         if(this.statusSelect){
           this.object.user.status= this.statusSelect.value;
@@ -346,15 +332,7 @@ export default {
     }
   },
   created(){
-      /*window.addEventListener('keyup',  function (event) {
-          if (event.defaultPrevented) {
-              return; // Do nothing if the event was already processed
-          }
-          if (event.key=="Enter") {
-            this.confirmArrival;
-          }
-        });
-        */
+
       this.loading.user = true;
       this.loading.membership = true;
       this.loading.groups = true;
@@ -372,8 +350,7 @@ export default {
       this.object.user.membership_starts_at = this.singleUserObject.membership_starts_at;
       this.object.user.membership_ends_at = this.singleUserObject.membership_ends_at;
       this.object.user.phone_number = this.singleUserObject.phone_number;
-
-
+      this.time = moment(this.object.user.membership_ends_at).lang("hr").format('L');
       var self = this;
       this.singleUserObject.membership_types.forEach(function(el){
         let obj = {
@@ -449,8 +426,16 @@ export default {
 
   },
   destroyed(){
-    //window.removeEventListener('keyup', this.confirmArrival);
+    this.changeHandler();
+  },
+  mounted(){
+    var vm = this;
 
+      window.addEventListener('keyup', function(event) {
+        if (event.keyCode == 13) {
+          vm.confirmArrival();
+        }
+      });
   },
   components:{
     Loader
