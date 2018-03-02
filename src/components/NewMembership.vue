@@ -29,7 +29,7 @@
 
 <script>
 import session from '../Session.js'
-
+import moment from 'moment'
 export default {
  data(){
    return {
@@ -48,6 +48,12 @@ export default {
      this.object.membership_type.after_hour_restriction=moment(this.object.membership_type.after_hour_restriction).format(',HH:MM');
    },
    createNewMembership(){
+     console.log(this.object.membership_type.after_hour_restriction);
+     console.log('tu');
+     if(this.object.membership_type.after_hour_restriction == ''){
+       let timeStr = "23:59";
+       this.object.membership_type.after_hour_restriction = moment(timeStr, 'HH:mm');
+      }
      this.$http.post('https://gym-management-system-cc.herokuapp.com/api/v1/membership_types/create', this.object).then(response => {
        // success callback
        this.error = false;
