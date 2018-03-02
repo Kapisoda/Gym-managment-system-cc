@@ -8,7 +8,7 @@
         <li><router-link to="memberships">Članarine</router-link></li>
       </ul>
       <ul class="right hide-on-med-and-down">
-          <li><a v-on:click="singOut">Odjavi se</a></li>
+          <li><a v-on:click="singOut">Odjavi se </a></li>
       </ul>
     </div>
   </nav>
