@@ -11,7 +11,7 @@
       <div class="row">
         <div class="input-field col s12">
           <input id="max_week_attendance_restriction" type="text" class="validate" v-model="object.membership_type.max_week_attendance_restriction">
-          <label for="max_week_attendance_restriction">Tjedni broj dolazaka</label>
+          <label for="max_week_attendance_restriction">Broj dolazaka</label>
         </div>
       </div>
       <div class="row">
