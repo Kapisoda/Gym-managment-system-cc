@@ -11,7 +11,9 @@ module.exports = {
     filename: 'build.js'
   },
   plugins: [
-    new HtmlWebpackPlugin()
+    new HtmlWebpackPlugin({
+      template: 'src/index.html'
+    })
   ],
   module: {
     rules: [
