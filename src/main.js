@@ -1,7 +1,5 @@
 
 import Vue from 'vue'
-bugsnagClient.use(bugsnag__vue())
-
 import App from './App.vue'
 import router from './routes'
 import VueSession from 'vue-session'
